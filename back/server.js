@@ -1,44 +1,44 @@
+var ROOT_FOLDER = "COGESTEC";
+var REQUEST_PAYLOAD = null;
 var GENERAL_DB =
-  "https://docs.google.com/spreadsheets/d/1s4fI_h4lKP8TUW_3iVTLDxZQOyXCMNUhuRhM1C7bNOA/edit?usp=sharing";
-var PROGRAMAS =
-  "https://docs.google.com/spreadsheets/d/1JBq9HT1yLVKGmpiB6fpOc6Lf0kqoZBziya0M5_dTjbo/edit?usp=sharing";
+  "https://docs.google.com/spreadsheets/d/1108Pbaw4SD_Cpx2xc6Q7x1UvrET0SsPgNNZOPumt9Gg/edit#gid=0";
 
 function doGet(request) {
+  var isAdmin = validateUserSession();
+  REQUEST_PAYLOAD = readRequest(request);
+
+  if (isAdmin) {
+    return createHtmlTemplate("index.html");
+  } else {
+    return createHtmlTemplate("close.html");
+  }
+}
+
+function validateUserSession() {
   var guess_email = Session.getActiveUser().getEmail();
   if (
     guess_email == "suarez.andres@correounivalle.edu.co" ||
     guess_email == "samuel.ramirez@correounivalle.edu.co"
   ) {
-    return HtmlService.createTemplateFromFile("index.html")
-      .evaluate() // evaluate MUST come before setting the Sandbox mode
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  } else {
-    return HtmlService.createTemplateFromFile("close.html")
-      .evaluate() // evaluate MUST come before setting the Sandbox mode
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    return true;
   }
+  return false;
+}
+
+function readRequest(request) {
+  if (typeof request !== "undefined")
+    return ContentService.createTextOutput(JSON.stringify(request.parameter));
+}
+
+function createHtmlTemplate(filename) {
+  return HtmlService.createTemplateFromFile(filename)
+    .evaluate()
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
-
-function getSheetFromSpreadSheet(url, sheet) {
-  var Spreedsheet = SpreadsheetApp.openByUrl(url);
-  if (url && sheet) return Spreedsheet.getSheetByName(sheet);
-}
-
-function getRawDataFromSheet(url, sheet) {
-  var mSheet = getSheetFromSpreadSheet(url, sheet);
-  if (mSheet)
-    return mSheet.getSheetValues(
-      1,
-      1,
-      mSheet.getLastRow(),
-      mSheet.getLastColumn()
-    );
-}
-
 
 function getPeopleRegistered() {
   var peopleSheet = getRawDataFromSheet(GENERAL_DB, "INSCRITOS");
@@ -64,7 +64,7 @@ function registerPerson(person) {
   person.push({ name: "hora_registro", value: new Date() });
   person.push({ name: "pago_comprobado", value: "NO" });
 
-  logFunctionOutput("perosn", person);
+  logFunctionOutput("person", person);
 
   var personValues = objectToSheetValues(person, headers);
   var finalValues = personValues.map(function(value) {
@@ -77,20 +77,23 @@ function registerPerson(person) {
   return result;
 }
 
-function getSRAPerson(cedula) {
-  var options = {
-    method: "post",
-    contentType: "application/x-www-form-urlencoded",
-    payload: "cedula=" + cedula,
-    validateHttpsCertificates: false
-  };
-  var result = UrlFetchApp.fetch(
-    "http://arzayus.co/egresados-script.php",
-    options
-  ).getContentText();
-  logFunctionOutput(getSRAPerson.name, result);
-
-  return result;
+function generatePayment(index) {
+  var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
+  var headers = inscritosSheet.getSheetValues(
+    1,
+    1,
+    1,
+    inscritosSheet.getLastColumn()
+  )[0];
+  var pagoIndex = headers.indexOf("PAGO_GENERADO");
+  Logger.log(pagoIndex);
+  Logger.log(index);
+  logFunctionOutput(
+    generatePayment.name,
+    inscritosSheet.getRange(index, pagoIndex).getValues()
+  );
+  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([["SI"]]);
+  return true;
 }
 
 function validatePerson(cedula) {
@@ -120,37 +123,7 @@ function validatePerson(cedula) {
   }
 }
 
-function objectToSheetValues(object, headers) {
-  var arrayValues = new Array(headers.length);
-  var lowerHeaders = headers.map(function(item) {
-    return item.toLowerCase();
-  });
-
-  Logger.log("HEADERS");
-  Logger.log(lowerHeaders);
-  Logger.log("OBJECT");
-  Logger.log(object);
-  for (var item in object) {
-    for (var header in lowerHeaders) {
-      if (String(object[item].name) == String(lowerHeaders[header])) {
-        if (
-          object[item].name == "nombres" ||
-          object[item].name == "apellidos"
-        ) {
-          arrayValues[header] = object[item].value.toUpperCase();
-          Logger.log(arrayValues);
-        } else {
-          arrayValues[header] = object[item].value;
-          Logger.log(arrayValues);
-        }
-      }
-    }
-  }
-  //logFunctionOutput(objectToSheetValues.name, arrayValues)
-  return arrayValues;
-}
-
-function getCurrentFolder(name, mainFolder) {
+function getPersonFolder(name, mainFolder) {
   //se crea la carpeta que va conener todos los docmuentos
   var nameFolder = "documentos";
   var FolderFiles,
@@ -174,7 +147,7 @@ function getCurrentFolder(name, mainFolder) {
 }
 
 function getMainFolder() {
-  var dropbox = "Cena Gala";
+  var dropbox = ROOT_FOLDER;
   var mainFolder,
     folders = DriveApp.getFoldersByName(dropbox);
 
@@ -186,14 +159,14 @@ function getMainFolder() {
   return mainFolder;
 }
 
-function createStudentFolder(numdoc, data) {
+function createPersonFolder(numdoc, data) {
   //se crea la carpeta que va contener los arhivos actuales
   var result = {
     url: "",
     file: ""
   };
   var mainFolder = getMainFolder();
-  var currentFolder = getCurrentFolder(numdoc, mainFolder);
+  var currentFolder = getPersonFolder(numdoc, mainFolder);
   result.url = currentFolder.getUrl();
 
   var contentType = data.substring(5, data.indexOf(";")),
@@ -207,23 +180,46 @@ function createStudentFolder(numdoc, data) {
   return result;
 }
 
-function generatePayment(index) {
-  var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
-  var headers = inscritosSheet.getSheetValues(
-    1,
-    1,
-    1,
-    inscritosSheet.getLastColumn()
-  )[0];
-  var pagoIndex = headers.indexOf("PAGO_GENERADO");
-  Logger.log(pagoIndex);
-  Logger.log(index);
-  logFunctionOutput(
-    generatePayment.name,
-    inscritosSheet.getRange(index, pagoIndex).getValues()
-  );
-  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([["SI"]]);
-  return true;
+function getSheetFromSpreadSheet(url, sheet) {
+  var Spreedsheet = SpreadsheetApp.openByUrl(url);
+  if (url && sheet) return Spreedsheet.getSheetByName(sheet);
+}
+
+function getRawDataFromSheet(url, sheet) {
+  var mSheet = getSheetFromSpreadSheet(url, sheet);
+  if (mSheet)
+    return mSheet.getSheetValues(
+      1,
+      1,
+      mSheet.getLastRow(),
+      mSheet.getLastColumn()
+    );
+}
+
+function objectToSheetValues(object, headers) {
+  var arrayValues = new Array(headers.length);
+  var lowerHeaders = headers.map(function(item) {
+    return item.toLowerCase();
+  });
+
+  for (var item in object) {
+    for (var header in lowerHeaders) {
+      if (String(object[item].name) == String(lowerHeaders[header])) {
+        if (
+          object[item].name == "nombres" ||
+          object[item].name == "apellidos"
+        ) {
+          arrayValues[header] = object[item].value.toUpperCase();
+          Logger.log(arrayValues);
+        } else {
+          arrayValues[header] = object[item].value;
+          Logger.log(arrayValues);
+        }
+      }
+    }
+  }
+  //logFunctionOutput(objectToSheetValues.name, arrayValues)
+  return arrayValues;
 }
 
 function sheetValuesToObject(sheetValues) {
