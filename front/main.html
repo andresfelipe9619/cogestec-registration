@@ -396,42 +396,6 @@
       $(".ui.form").form("clear");
     }
     
-    function loadAcademicProgramsAndFaculties() {
-      function onSuccess(result) {
-        console.log("good job", result);
-        if (result) {
-          $.each(result.programs, function(i, program) {
-            $("select[name='programa']").append(
-              $("<option>", {
-                value: program.nombre,
-                text: program.nombre
-              })
-            );
-          });
-    
-          $.each(result.faculties, function(i, faculty) {
-            $("select[name='facultad']").append(
-              $("<option>", {
-                value: faculty,
-                text: faculty
-              })
-            );
-          });
-    
-          $("select[name='programa']").on("change", function(e) {
-            $.each(result.programs, function(i, program) {
-              if (e.target.value == program.nombre) {
-                $("select[name='facultad']").val(program.facultad);
-                $("select[name='facultad']").trigger("change");
-                return false;
-              }
-            });
-          });
-        }
-      }
-      google.script.run.withSuccessHandler(onSuccess).getFacultiesAndPrograms();
-    }
-    
     function searchPersonInSRA(cedula) {
       function onSuccess(result) {
         console.log("good job", result);
@@ -449,28 +413,7 @@
       return google.script.run.withSuccessHandler(onSuccess).getSRAPerson(cedula);
     }
     
-  
-    function testing(){
-      var users = [
-        
-        ]
-      
-      users.map(function(user, i){
-           checkStatus(user)
-      })
-        
-    }
-    
-    function checkStatus(user){
-        var result = searchPersonInSRA(user)
-        if(result){
-            console.log('OK :D')
-        }else {
-            console.log('NOT OK :|')
-        }  
-    }
-      
-    
+
     function formValidation() {
       $(".ui.form").form({
         inline: true,
@@ -535,34 +478,7 @@
               }
             ]
           },
-          programa: {
-            identifier: "programa",
-            rules: [
-              {
-                type: "empty",
-                prompt: "Por favor ingrese un programa"
-              }
-            ]
-          },
-    
-          politicas: {
-            identifier: "politicas",
-            rules: [
-              {
-                type: "checked",
-                prompt: "Por favor acepte nuestras politicas para inscribirse"
-              }
-            ]
-          },
-          facultad: {
-            identifier: "facultad",
-            rules: [
-              {
-                type: "empty",
-                prompt: "Por favor ingrese una facultad"
-              }
-            ]
-          }
+
         }
       });
     }
