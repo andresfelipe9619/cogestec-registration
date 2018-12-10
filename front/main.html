@@ -89,7 +89,7 @@
 
         $("#result-msg").text("");
         $("#result-msg").text(
-          "Su inscripción a la Cena de Gala Egresados 2018 fue realizada de manera exitosa. Recuerde que usted cuenta con 48 horas para generar su pago. Pasadas estas 48 horas, el sistema deshabilitará la inscripción."
+          "Su inscripción a fue realizada de manera exitosa."
         );
         $(".ui.modal").modal("show");
         $(".actions").css("display", "block");
@@ -165,6 +165,20 @@
     };
   })();
 
+  function setRequestPayload() {
+    function onSuccess(response) {
+      if (response.ok) {
+        $("input[name='concepto_pago']").val(response);
+        console.log("You are not fucked up", response);
+
+      } else {
+        console.log("You fucked up", response);
+      }
+    }
+    console.log(formData);
+    google.script.run.withSuccessHandler(onSuccess).getRequestPayload();
+  } 
+
   function loadPersonInForm(person) {
     console.log("Person in form", person);
     personIndex = Number(person.index) + 1;
@@ -173,15 +187,12 @@
     $("input[name='cedula']").val(person.data.cedula);
     $("input[name='correo']").val(person.data.correo);
     $("input[name='telefono']").val(person.data.telefono);
-
     if (person.data["pago_comprobado"] == "SI") {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente. Le esperamos el
-                próximo 23 de Noviembre de 2018.
-                Si presenta alguna dificultad en el proceso de inscripción, por favor escribanos al correo electrónico soyegresado@correounivalle.edu.co
+                El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente. 
               </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
@@ -189,8 +200,7 @@
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                El pago de su inscripción aun no ha sido registrado. Recuerde que después de 48 horas sin registrar el pago, el sistema anulará su inscripción.
-                Si presenta alguna dificultad en el proceso de inscripción, por favor escribanos al correo electrónico soyegresado@correounivalle.edu.co
+                El pago de su inscripción aun no ha sido registrado. 
               </div>`);
     }
 
@@ -203,6 +213,8 @@
     }
     disableFormFielfds(true);
     $(".ui.form").removeClass("loading");
+    return setRequestPayload()
+
   }
   function modalPayment() {
     var onSuccess = function(person) {
@@ -307,6 +319,15 @@
             }
           ]
         },
+        dependencia: {
+          identifier: "dependencia",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Por favor ingrese un nombre"
+            }
+          ]
+        },
         cedula: {
           identifier: "cedula",
           rules: [
@@ -333,6 +354,32 @@
             }
           ]
         },
+        concepto_pago: {
+          identifier: "concepto_pago",
+          rules: [
+            {
+              type: "number",
+              prompt: "Por favor ingrese un numero valido"
+            },
+            {
+              type: "empty",
+              prompt: "Por favor ingrese un numero"
+            }
+          ]
+        },
+        pago_total: {
+          identifier: "pago_total",
+          rules: [
+            {
+              type: "number",
+              prompt: "Por favor ingrese un numero valido"
+            },
+            {
+              type: "empty",
+              prompt: "Por favor ingrese un numero"
+            }
+          ]
+        },
         email: {
           identifier: "correo",
           rules: [
@@ -343,6 +390,15 @@
             {
               type: "empty",
               prompt: "Por favor ingrese un correo"
+            }
+          ]
+        },
+        doc_file: {
+          identifier: "doc_file",
+          rules: [
+            {
+              type: "empty",
+              prompt: "Por favor ingrese un archivo"
             }
           ]
         }

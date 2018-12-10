@@ -37,7 +37,7 @@
             <button
               id="btn-search"
               tabindex="0"
-              class="ui red button"
+              class="ui black button"
               onclick="searchForPerson()"
             >
               Continuar
@@ -56,13 +56,21 @@
 
             <h4 class="ui dividing header">Información General</h4>
             <div class="field">
-              <div class="fields">
-                <div class="sixteen wide field">
+              <div class="two fields">
+                <div class="field">
                   <label>Número de Cédula</label>
                   <input
                     class="numeric"
                     name="cedula"
                     placeholder="Numero de documento"
+                    type="text"
+                  />
+                </div>
+                <div class="field">
+                  <label>Dependencia</label>
+                  <input
+                    name="dependencia"
+                    placeholder="Dependencia "
                     type="text"
                   />
                 </div>
@@ -101,10 +109,29 @@
                 />
               </div>
             </div>
+            <div class="two fields">
+              <div class="field">
+                <label>Concepto de Pago</label>
+                <input
+                  name="concepto_pago"
+                  class="numeric"
+                  placeholder="Concepto de pago"
+                  type="text"
+                />
+              </div>
+              <div class="field">
+                <label>Pago Total</label>
+                <input
+                  name="pago_total"
+                  class="numeric"
+                  placeholder="Pago Total "
+                  type="text"
+                />
+              </div>
+            </div>
             <div class="field file-field">
               <label for="doc_file"
-                >Documento de validez que es Egresado(carnet, acta de grado,
-                diploma).</label
+                >Documento de validez </label
               >
               <input type="file" id="doc_file" name="doc_file" />
             </div>
@@ -112,26 +139,25 @@
             <div
               id="submit-btn"
               name="submit-btn "
-              class="ui submit red button"
+              class="ui submit black button"
             >
-              continuar
+              Continuar
             </div>
 
             <a
-              class="ui red not-visible button"
+              class="ui black not-visible button"
               id="register-pay-btn"
               name="register-pay-btn"
               onclick="submitPayment()"
               target=" _blank"
-              href="https://pagoenlinea.univalle.edu.co/autoliquidacion/?ser_codigo=340&una_codigo=24&hash=c8371222b8308d4b339e33827de66a604990d210"
+              href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111"
               >Generar pago</a
             >
           </form>
 
           <div class="ui bottom attached warning message">
             <i class="icon help"></i> Si presenta alguna dificultad en el
-            proceso de inscripción, por favor escríbanos al correo electrónico:
-            soyegresado@correounivalle.edu.co
+            proceso de inscripción, por favor escríbanos al correo electrónico.
           </div>
         </div>
         <div class="ui tiny modal">
@@ -145,7 +171,7 @@
             <div class="actions">
               <a
                 id="modal-payment"
-                class="ui red right labeled icon button"
+                class="ui black right labeled icon button"
                 onclick="modalPayment()"
                 target=" _blank"
                 href="https://pagoenlinea.univalle.edu.co/autoliquidacion/?ser_codigo=340&una_codigo=24&hash=c8371222b8308d4b339e33827de66a604990d210"

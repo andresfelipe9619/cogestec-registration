@@ -5,7 +5,7 @@ var GENERAL_DB =
 
 function doGet(request) {
   var isAdmin = validateUserSession();
-  REQUEST_PAYLOAD = readRequest(request);
+  readRequest(request);
 
   if (isAdmin) {
     return createHtmlTemplate("index.html");
@@ -26,8 +26,37 @@ function validateUserSession() {
 }
 
 function readRequest(request) {
-  if (typeof request !== "undefined")
-    return ContentService.createTextOutput(JSON.stringify(request.parameter));
+  if (typeof request !== "undefined") {
+    var params = request.parameter;
+    Logger.log(params.attendant);
+    setAttendantPayment(params.attendant);
+  }
+}
+
+function setAttendantPayment(attendant) {
+  
+  var he_pays = 0;
+  if (attendant) {
+    switch (attendant) {
+      case "professional":
+        he_pays = 437.0;
+        break;
+      case "student":
+        he_pays = 287.5;
+        break;
+      case "professional_r":
+        he_pays = 322.0;
+        break;
+      case "student_r":
+        he_pays = 230.0;
+        break;
+      default:
+        break;
+    }
+  }
+  Logger.log(attendant)
+  Logger.log(he_pays)
+  REQUEST_PAYLOAD = he_pays;
 }
 
 function createHtmlTemplate(filename) {
@@ -45,6 +74,9 @@ function getPeopleRegistered() {
   var peopleObjects = sheetValuesToObject(peopleSheet);
   // logFunctionOutput(getPeopleRegistered.name, peopleObjects)
   return peopleObjects;
+}
+function getRequestPayload(){
+  return REQUEST_PAYLOAD;
 }
 
 function searchPerson(cedula) {
