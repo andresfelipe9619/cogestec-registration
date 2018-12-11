@@ -65,7 +65,7 @@
             );
         };
       } else {
-        formData.push({ name: "doc_file", value: "SRA" });
+        formData.push({ name: "doc_file", value: "Professional" });
         addPayment(formData);
       }
     } catch (error) {
@@ -83,17 +83,32 @@
     registerPersonInSheet(formData);
   }
 
+  function loadPersonInModal(person) {
+    console.log("you again?", person);
+    $(".ui.form").removeClass("loading");
+    $("#result-msg").text("");
+    $(".ui.modal")
+    // .modal({
+    // onVisible: function () {
+    //     $("#.ui.modal").modal("refresh");
+    //     }
+    // })
+    .modal("show");
+    $(".actions").css("display", "block");
+    $("#result-msg").text("Su inscripción a fue realizada de manera exitosa.");
+    $("input[name='nombres_modal']").val(person[0] + ' '+ person[1]);
+    $("input[name='cedula_modal']").val(person[2]);
+    $("input[name='correo_modal']").val(person[3]);
+    $("input[name='telefono_modal']").val(person[4]);
+    $("input[name='dependencia_modal']").val(person[5]);
+    $("input[name='concepto_pago_modal']").val(person[6]);
+    $("input[name='pago_total_modal']").val(person[7]);
+  }
+
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
       if (response.ok) {
-        $(".ui.form").removeClass("loading");
-
-        $("#result-msg").text("");
-        $("#result-msg").text(
-          "Su inscripción a fue realizada de manera exitosa."
-        );
-        $(".ui.modal").modal("show");
-        $(".actions").css("display", "block");
+        loadPersonInModal(response.data);
       } else {
         console.log("You fucked up", response);
       }
@@ -212,6 +227,7 @@
     $("input[name='cedula']").val(person.data.cedula);
     $("input[name='correo']").val(person.data.correo);
     $("input[name='telefono']").val(person.data.telefono);
+    $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     $("input[name='pago_total']").val(person.data.pago_total);
     if (person.data["pago_comprobado"] == "SI") {
@@ -219,16 +235,16 @@
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                                  El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente.
-                                </div>`);
+                                                      El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente.
+                                                    </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                                  El pago de su inscripción aun no ha sido registrado.
-                                </div>`);
+                                                      El pago de su inscripción aun no ha sido registrado.
+                                                    </div>`);
     }
 
     $("#submit-btn").addClass("not-visible");
@@ -251,7 +267,7 @@
             function fullSuccess(result) {
               console.log("result", result);
               $("#modal-payment").removeClass("loading");
-              $(".ui.modal").modal("hide");
+              // $(".ui.modal").modal("hide");
               hideForm();
               return true;
             }
@@ -316,7 +332,10 @@
 
   function formValidation() {
     $.fn.form.settings.rules.file = function(value) {
-      if ($('input[name="doc_file"]').hasClass("not-visible")) {
+      if (
+        $('input[name="doc_file"]').hasClass("not-visible") ||
+        value.length > 0
+      ) {
         return true;
       }
       return false;

@@ -130,9 +130,7 @@
               </div>
             </div>
             <div class="field file-field">
-              <label for="doc_file"
-                >Documento de validez </label
-              >
+              <label for="doc_file">Documento de validez </label>
               <input type="file" id="doc_file" name="doc_file" />
             </div>
             <br />
@@ -165,8 +163,66 @@
           <div class="header success">
             Usuario registrado satisfactoriamente!
           </div>
-          <div class="content">
-            <div id="result-msg" class="ui success message"></div>
+          <div class="scrolling content">
+            <div id="result-msg" class="ui success message">
+            </div>
+
+              <form class="ui form">
+                <div class="field">
+                  <label>Nit o Cédula</label>
+                  <input
+                    class="numeric"
+                    name="cedula_modal"
+                    placeholder="Numero de documento"
+                    type="text"
+                  />
+                </div>
+                <div class="field">
+                  <label>Concepto de Pago</label>
+                  <input
+                    name="concepto_pago_modal"
+                    class="numeric"
+                    placeholder="Concepto de pago"
+                    type="text"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>Pago Total</label>
+                  <input
+                    name="pago_total_modal"
+                    class="numeric"
+                    placeholder="Pago Total "
+                    type="text"
+                  />
+                </div>
+
+                <div class="field">
+                  <label>Nombre Completo</label>
+                  <input
+                    name="nombres_modal"
+                    placeholder="Nombres"
+                    type="text"
+                  />
+                </div>
+                <div class="field">
+                  <label>Dependencia</label>
+                  <input
+                    name="dependencia_modal"
+                    placeholder="Dependencia "
+                    type="text"
+                  />
+                </div>
+                <div class="four wide field">
+                  <label>Télefono de Contacto</label>
+                  <input
+                    name="telefono_modal"
+                    class="numeric"
+                    placeholder="Telefono"
+                    type="text"
+                  />
+                </div>
+              </form>
 
             <div class="actions">
               <a
