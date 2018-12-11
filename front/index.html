@@ -51,7 +51,7 @@
       <div class="row">
         <div id="mainForm" class="twelve wide center column">
           <div id="pay-msg" class="ui success message not-visible"></div>
-          <form class="ui form attached fluid segment">
+          <form class="ui form attached fluid segment" id="form-form">
             <div class="ui error message"><i class="close icon"></i></div>
 
             <h4 class="ui dividing header">Información General</h4>
@@ -114,7 +114,6 @@
                 <label>Concepto de Pago</label>
                 <input
                   name="concepto_pago"
-                  class="numeric"
                   placeholder="Concepto de pago"
                   type="text"
                 />
@@ -132,6 +131,28 @@
             <div class="field file-field">
               <label for="doc_file">Documento de validez </label>
               <input type="file" id="doc_file" name="doc_file" />
+            </div>
+            <div class="field">
+              <div class="ui checkbox">
+                <input name="ponente" type="checkbox" />
+                <label
+                  >Autorizo la publicación de la ponencia en memorias.</label
+                >
+              </div>
+            </div>
+            <div class="field content">
+              <div class="ui checkbox">
+                <input name="politicas" type="checkbox" />
+                <label
+                  >Acepto las
+                  <a
+                    target="_blank"
+                    href="http://uvsalud.univalle.edu.co/pdf/politicas_institucionales/r_1172_reglamento_ptotecc_datos_personales.pdf"
+                    >Políticas de tratamiento de datos de la Universidad del
+                    Valle</a
+                  ></label
+                >
+              </div>
             </div>
             <br />
             <div
@@ -160,70 +181,68 @@
         </div>
         <div class="ui tiny modal">
           <i class="close icon" onclick="location.reload('true')"></i>
-          <div class="header success">
+          <div class="ui large center aligned green inverted header ">
             Usuario registrado satisfactoriamente!
           </div>
           <div class="scrolling content">
-            <div id="result-msg" class="ui success message">
-            </div>
+            <div id="result-msg" class="ui message"></div>
 
-              <form class="ui form">
-                <div class="field">
-                  <label>Nit o Cédula</label>
-                  <input
-                    class="numeric"
-                    name="cedula_modal"
-                    placeholder="Numero de documento"
-                    type="text"
-                  />
-                </div>
-                <div class="field">
-                  <label>Concepto de Pago</label>
-                  <input
-                    name="concepto_pago_modal"
-                    class="numeric"
-                    placeholder="Concepto de pago"
-                    type="text"
-                  />
-                </div>
+            <form class="ui form" id="modal-form">
+              <div class="ui medium center aligned red inverted header">
+                <i class="icon lock"></i>
+                <div class="content">Información de Pago</div>
+              </div>
+              <div class="inline field">
+                <label>*Nit o Cédula</label>
+                <input
+                  class="numeric"
+                  name="cedula_modal"
+                  placeholder="Numero de documento"
+                  type="text"
+                />
+              </div>
+              <div class="inline field">
+                <label>*Concepto de Pago</label>
+                <input
+                  name="concepto_pago_modal"
+                  placeholder="Concepto de pago"
+                  type="text"
+                />
+              </div>
 
-                <div class="field">
-                  <label>Pago Total</label>
-                  <input
-                    name="pago_total_modal"
-                    class="numeric"
-                    placeholder="Pago Total "
-                    type="text"
-                  />
-                </div>
+              <div class="inline field">
+                <label>*Pago Total</label>
+                <input
+                  name="pago_total_modal"
+                  class="numeric"
+                  placeholder="Pago Total "
+                  type="text"
+                />
+              </div>
 
-                <div class="field">
-                  <label>Nombre Completo</label>
-                  <input
-                    name="nombres_modal"
-                    placeholder="Nombres"
-                    type="text"
-                  />
-                </div>
-                <div class="field">
-                  <label>Dependencia</label>
-                  <input
-                    name="dependencia_modal"
-                    placeholder="Dependencia "
-                    type="text"
-                  />
-                </div>
-                <div class="four wide field">
-                  <label>Télefono de Contacto</label>
-                  <input
-                    name="telefono_modal"
-                    class="numeric"
-                    placeholder="Telefono"
-                    type="text"
-                  />
-                </div>
-              </form>
-
+              <div class="inline field">
+                <label>*Nombre Completo</label>
+                <input name="nombres_modal" placeholder="Nombres" type="text" />
+              </div>
+              <div class="inline field">
+                <label>*Dependencia</label>
+                <input
+                  name="dependencia_modal"
+                  placeholder="Dependencia "
+                  type="text"
+                />
+              </div>
+              <div class="inline field">
+                <label class="red">Télefono de Contacto</label>
+                <input
+                  name="telefono_modal"
+                  class="numeric "
+                  placeholder="Telefono"
+                  type="text"
+                />
+              </div>
+            </form>
+            <br />
             <div class="actions">
               <a
                 id="modal-payment"

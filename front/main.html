@@ -40,7 +40,7 @@
   function validationpassed(e) {
     try {
       e.preventDefault();
-      var mForm = $(".ui.form");
+      var mForm = $("#form-form");
       var formData = mForm.serializeArray();
       mForm.addClass("loading");
 
@@ -83,28 +83,6 @@
     registerPersonInSheet(formData);
   }
 
-  function loadPersonInModal(person) {
-    console.log("you again?", person);
-    $(".ui.form").removeClass("loading");
-    $("#result-msg").text("");
-    $(".ui.modal")
-    // .modal({
-    // onVisible: function () {
-    //     $("#.ui.modal").modal("refresh");
-    //     }
-    // })
-    .modal("show");
-    $(".actions").css("display", "block");
-    $("#result-msg").text("Su inscripción a fue realizada de manera exitosa.");
-    $("input[name='nombres_modal']").val(person[0] + ' '+ person[1]);
-    $("input[name='cedula_modal']").val(person[2]);
-    $("input[name='correo_modal']").val(person[3]);
-    $("input[name='telefono_modal']").val(person[4]);
-    $("input[name='dependencia_modal']").val(person[5]);
-    $("input[name='concepto_pago_modal']").val(person[6]);
-    $("input[name='pago_total_modal']").val(person[7]);
-  }
-
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
       if (response.ok) {
@@ -126,27 +104,32 @@
 
   function setAttendantPayment(attendant) {
     var he_pays = 0;
+    var concept = "";
     if (attendant) {
       switch (attendant) {
         case "professional":
           he_pays = "437.000";
-          $("input[name='doc_file']").addClass("not-visible");
+          concept = "Professional Attendant";
+          $(".file-field").addClass("not-visible");
           break;
         case "professional_r":
           he_pays = "322.000";
-          $("input[name='doc_file']").addClass("not-visible");
+          concept = "Professional Researcher";
+          $(".file-field").addClass("not-visible");
           break;
         case "student":
           he_pays = "287.500";
+          concept = "Student";
           break;
         case "student_r":
           he_pays = "230.000";
+          concept = "Student Researcher";
           break;
         default:
           break;
       }
       requestPayload = he_pays;
-      $("input[name='concepto_pago']").val(requestPayload);
+      $("input[name='concepto_pago']").val(concept);
       $("input[name='concepto_pago']").prop("readonly", true);
       $("input[name='concepto_pago']").addClass("not-allowed");
       $("input[name='pago_total']").val(requestPayload);
@@ -161,7 +144,7 @@
     var onSuccess = function(person) {
       if (person) {
         showForm();
-        $(".ui.form").addClass("loading");
+        $("#form-form").addClass("loading");
         console.log("A nice formatted person", person);
         $("#btn-search").removeClass("loading");
         $("input[name='cedula']").prop("readonly", true);
@@ -170,7 +153,7 @@
           loadPersonInForm(person);
         } else {
           getRequestPayload();
-          $(".ui.form").removeClass("loading");
+          $("#form-form").removeClass("loading");
         }
       } else {
         console.log("Something went wrong searching user...");
@@ -235,18 +218,19 @@
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                                                      El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente.
-                                                    </div>`);
+                                                        El pago de su inscripción registrado satisfactoriamente.
+                                                      </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                                                      El pago de su inscripción aun no ha sido registrado.
-                                                    </div>`);
+                                                            El pago de su inscripción aun no ha sido registrado.
+                                                          </div>`);
     }
 
+    $(".file-field").addClass("not-visible");
     $("#submit-btn").addClass("not-visible");
     $("#submit-pay-btn").addClass("not-visible");
 
@@ -255,7 +239,7 @@
       $("#register-pay-btn").addClass("visible");
     }
     disableFormFielfds(true);
-    $(".ui.form").removeClass("loading");
+    $("#form-form").removeClass("loading");
   }
 
   function modalPayment() {
@@ -327,20 +311,45 @@
     $("#pay-msg").text("");
 
     disableFormFielfds(false);
-    $(".ui.form").form("clear");
+    $("#form-form").form("clear");
+  }
+
+  function loadPersonInModal(person) {
+    $("#form-form").removeClass("loading");
+    $("#result-msg").text("");
+    $(".ui.modal").modal("show");
+    $(".actions").css("display", "block");
+    $("#result-msg")
+      .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago. 
+      Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+    $("input[name='nombres_modal']").val(person[0] + " " + person[1]);
+    $("input[name='nombres_modal']").prop("readonly", true);
+    $("input[name='nombres_modal']").addClass("not-allowed");
+    $("input[name='cedula_modal']").val(person[2]);
+    $("input[name='cedula_modal']").prop("readonly", true);
+    $("input[name='cedula_modal']").addClass("not-allowed");
+    $("input[name='telefono_modal']").val(person[4]);
+    $("input[name='telefono_modal']").prop("readonly", true);
+    $("input[name='telefono_modal']").addClass("not-allowed");
+    $("input[name='dependencia_modal']").val(person[5]);
+    $("input[name='dependencia_modal']").prop("readonly", true);
+    $("input[name='dependencia_modal']").addClass("not-allowed");
+    $("input[name='concepto_pago_modal']").val(person[6]);
+    $("input[name='concepto_pago_modal']").prop("readonly", true);
+    $("input[name='concepto_pago_modal']").addClass("not-allowed");
+    $("input[name='pago_total_modal']").val(person[7]);
+    $("input[name='pago_total_modal']").prop("readonly", true);
+    $("input[name='pago_total_modal']").addClass("not-allowed");
   }
 
   function formValidation() {
     $.fn.form.settings.rules.file = function(value) {
-      if (
-        $('input[name="doc_file"]').hasClass("not-visible") ||
-        value.length > 0
-      ) {
+      if ($(".file-field").hasClass("not-visible") || value.length > 0) {
         return true;
       }
       return false;
     };
-    $(".ui.form").form({
+    $("#form-form").form({
       inline: true,
       on: "blur",
       transition: "fade down",
@@ -403,10 +412,6 @@
           identifier: "concepto_pago",
           rules: [
             {
-              type: "number",
-              prompt: "Por favor ingrese un numero valido"
-            },
-            {
               type: "empty",
               prompt: "Por favor ingrese un numero"
             }
@@ -422,6 +427,26 @@
             {
               type: "empty",
               prompt: "Por favor ingrese un numero"
+            }
+          ]
+        },
+          
+        ponente: {
+          identifier: "ponente",
+          rules: [
+            {
+              type: "checked",
+              prompt: "Por favor acepte nuestras politicas para inscribirse"
+            }
+          ]
+        },
+          
+        politicas: {
+          identifier: "politicas",
+          rules: [
+            {
+              type: "checked",
+              prompt: "Por favor acepte nuestras politicas para inscribirse"
             }
           ]
         },
