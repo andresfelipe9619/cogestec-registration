@@ -2,6 +2,7 @@
   $(document).ready(init_js);
   var buttonpressed;
   var personIndex;
+  var requestPayload;
   function init_js() {
     $(".submit.button").click(function() {
       buttonpressed = $(this).attr("name");
@@ -101,6 +102,43 @@
     google.script.run.withSuccessHandler(onSuccess).registerPerson(formData);
   }
 
+  function getRequestPayload() {
+    google.script.url.getLocation(function(location) {
+      var payload = location.parameter.attendant || null;
+      setAttendantPayment(payload);
+    });
+  }
+
+  function setAttendantPayment(attendant) {
+    var he_pays = 0;
+    if (attendant) {
+      switch (attendant) {
+        case "professional":
+          he_pays = "437.000";
+          $("input[name='doc_file']").addClass("not-visible");
+          break;
+        case "professional_r":
+          he_pays = "322.000";
+          $("input[name='doc_file']").addClass("not-visible");
+          break;
+        case "student":
+          he_pays = "287.500";
+          break;
+        case "student_r":
+          he_pays = "230.000";
+          break;
+        default:
+          break;
+      }
+      requestPayload = he_pays;
+      $("input[name='concepto_pago']").val(requestPayload);
+      $("input[name='concepto_pago']").prop("readonly", true);
+      $("input[name='concepto_pago']").addClass("not-allowed");
+      $("input[name='pago_total']").val(requestPayload);
+      $("input[name='pago_total']").prop("readonly", true);
+      $("input[name='pago_total']").addClass("not-allowed");
+    }
+  }
   function searchForPerson() {
     hideForm();
     $("#btn-search").addClass("loading");
@@ -116,6 +154,7 @@
         if (person.isRegistered) {
           loadPersonInForm(person);
         } else {
+          getRequestPayload();
           $(".ui.form").removeClass("loading");
         }
       } else {
@@ -165,20 +204,6 @@
     };
   })();
 
-  function setRequestPayload() {
-    function onSuccess(response) {
-      if (response.ok) {
-        $("input[name='concepto_pago']").val(response);
-        console.log("You are not fucked up", response);
-
-      } else {
-        console.log("You fucked up", response);
-      }
-    }
-    console.log(formData);
-    google.script.run.withSuccessHandler(onSuccess).getRequestPayload();
-  } 
-
   function loadPersonInForm(person) {
     console.log("Person in form", person);
     personIndex = Number(person.index) + 1;
@@ -187,21 +212,23 @@
     $("input[name='cedula']").val(person.data.cedula);
     $("input[name='correo']").val(person.data.correo);
     $("input[name='telefono']").val(person.data.telefono);
+    $("input[name='concepto_pago']").val(person.data.concepto_pago);
+    $("input[name='pago_total']").val(person.data.pago_total);
     if (person.data["pago_comprobado"] == "SI") {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente. 
-              </div>`);
+                                  El pago de su inscripción a la Noche de Gala de Egresados fue registrado satisfactoriamente.
+                                </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                El pago de su inscripción aun no ha sido registrado. 
-              </div>`);
+                                  El pago de su inscripción aun no ha sido registrado.
+                                </div>`);
     }
 
     $("#submit-btn").addClass("not-visible");
@@ -213,9 +240,8 @@
     }
     disableFormFielfds(true);
     $(".ui.form").removeClass("loading");
-    return setRequestPayload()
-
   }
+
   function modalPayment() {
     var onSuccess = function(person) {
       if (person) {
@@ -255,12 +281,6 @@
       function onSuccess(result) {
         $("#register-pay-btn").removeClass("loading");
         if (result) {
-          //   $("#result-msg").append(`Apreciado Egresado, su inscripción ha sido registrada. Para realizar el pago,
-          //   por favor dar clic en el botón realizar pago
-          //   Recuerde realizar el pago en un periodo menor a 48 horas para reservar su cupo en el evento.
-          //   Una vez realizado el pago, en un lapso máximo de 48 horas recibirá el correo oficial de bienvenida.
-          //   Si presenta alguna dificultad en el proceso de inscripción, por favor escribanos al correo electrónico soyegresado@correounivalle.edu.co`)
-          // $(".ui.modal").modal("show");
           console.log("result", result);
           hideForm();
           return true;
@@ -295,6 +315,12 @@
   }
 
   function formValidation() {
+    $.fn.form.settings.rules.file = function(value) {
+      if ($('input[name="doc_file"]').hasClass("not-visible")) {
+        return true;
+      }
+      return false;
+    };
     $(".ui.form").form({
       inline: true,
       on: "blur",
@@ -397,7 +423,7 @@
           identifier: "doc_file",
           rules: [
             {
-              type: "empty",
+              type: "file",
               prompt: "Por favor ingrese un archivo"
             }
           ]
