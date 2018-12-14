@@ -11,13 +11,13 @@
   </head>
 
   <body>
-    <div id="navbar" class="ui fixed inverted menu black">
+    <div id="navbar" class="ui fixed inverted menu blue">
       <div class="ui container">
         <img
           class="logo"
           src="http://www.cogestec.co/wp-content/uploads/2018/11/Logo-3.png"
-          width="200px"
-          height="100px"
+          width="180px"
+          height="90px"
         />
         <h3 class="header item">&nbsp;&nbsp;REGISTRO COGESTEC 2019</h3>
       </div>
@@ -26,6 +26,14 @@
     <div id="main-content" class="ui main container middle center grid">
       <div class="one column row fluid" id="id-search">
         <div id="search-container" class="twelve wide column">
+          <h3 class="ui header">
+            Por favor ingresar su número de identificación, el cual será
+            utilizado a lo largo del evento para el
+            <span style="color:blue"
+              >ingreso a las sedes, cartas de aceptación y descarga de
+              certificados.
+            </span>
+          </h3>
           <div class="ui fluid action input large">
             <input
               id="busca-cedula"
@@ -37,7 +45,7 @@
             <button
               id="btn-search"
               tabindex="0"
-              class="ui black button"
+              class="ui blue button"
               onclick="searchForPerson()"
             >
               Continuar
@@ -58,7 +66,7 @@
             <div class="field">
               <div class="two fields">
                 <div class="field">
-                  <label>Número de Cédula</label>
+                  <label>NÚMERO DE CÉDULA</label>
                   <input
                     class="numeric"
                     name="cedula"
@@ -66,25 +74,27 @@
                     type="text"
                   />
                 </div>
-                <div class="field">
-                  <label>Dependencia</label>
-                  <input
-                    name="dependencia"
-                    placeholder="Dependencia "
-                    type="text"
-                  />
-                </div>
+                <!--
+                  <div class="field">
+                    <label>Dependencia</label>
+                    <input
+                      name="dependencia"
+                      placeholder="Dependencia "
+                      type="text"
+                    />
+                  </div>
+                -->
               </div>
             </div>
 
             <div class="field">
               <div class="two fields">
                 <div class="field">
-                  <label>Nombres</label>
+                  <label>NOMBRES</label>
                   <input name="nombres" placeholder="Nombres" type="text" />
                 </div>
                 <div class="field">
-                  <label>Apellidos</label>
+                  <label>APELLIDOS</label>
                   <input name="apellidos" placeholder="Apellidos" type="text" />
                 </div>
               </div>
@@ -92,7 +102,7 @@
 
             <div class="fields">
               <div class="twelve wide field">
-                <label>Correo Electrónico</label>
+                <label>CORREO ELECTRÓNICO</label>
                 <input
                   name="correo"
                   placeholder="Correo Electronico"
@@ -100,7 +110,7 @@
                 />
               </div>
               <div class="four wide field">
-                <label>Télefono Celular</label>
+                <label>TÉLEFONO CELULAR</label>
                 <input
                   name="telefono"
                   class="numeric"
@@ -111,7 +121,7 @@
             </div>
             <div class="two fields">
               <div class="field">
-                <label>Concepto de Pago</label>
+                <label>CONCEPTO DE PAGO</label>
                 <input
                   name="concepto_pago"
                   placeholder="Concepto de pago"
@@ -119,7 +129,7 @@
                 />
               </div>
               <div class="field">
-                <label>Pago Total</label>
+                <label>PAGO TOTAL</label>
                 <input
                   name="pago_total"
                   class="numeric"
@@ -129,19 +139,50 @@
               </div>
             </div>
             <div class="field file-field">
-              <label for="doc_file">Documento de validez </label>
-              <input type="file" id="doc_file" name="doc_file" />
+              <label for="doc_file"
+                ><strong>DOCUMENTO DE VALIDACIÓN</strong> <br />
+                Por favor, cargar un CERTIFICADO DE ESTUDIO que le acredite como
+                estudiante pregrado activo (formato .PDF)</label
+              >
+              <input
+                type="file"
+                id="doc_file"
+                name="doc_file"
+                accept="application/pdf "
+              />
             </div>
-            <div class="field">
-              <div class="ui checkbox">
-                <input name="ponente" type="checkbox" />
-                <label
-                  >Autorizo la publicación de la ponencia en memorias.</label
-                >
+            <div id="ponencia_fields" class="inline fields">
+              <label
+                >En caso de ser aceptada la ponencia, autorizo que sea publicada
+                en las memorias del Congreso (con ISBN)</label
+              >
+              <div class="field">
+                <div class="ui radio checkbox ">
+                  <input
+                    name="acepta_ponencia"
+                    type="radio"
+                    value="NO"
+                    tabindex="0"
+                    class="hidden"
+                  />
+                  <label>NO</label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui radio checkbox">
+                  <input
+                    name="acepta_ponencia"
+                    type="radio"
+                    value="SI"
+                    tabindex="0"
+                    class="hidden"
+                  />
+                  <label>SI</label>
+                </div>
               </div>
             </div>
             <div class="field content">
-              <div class="ui checkbox">
+              <div class="ui checkbox" id="politicas"> 
                 <input name="politicas" type="checkbox" />
                 <label
                   >Acepto las
@@ -158,13 +199,19 @@
             <div
               id="submit-btn"
               name="submit-btn "
-              class="ui submit black button"
+              class="ui submit blue button"
             >
               Continuar
             </div>
-
+            <div
+              id="free-btn"
+              name="free-btn "
+              class="ui submit blue not-visible button"
+            >
+              Solicitar descuento
+            </div>
             <a
-              class="ui black not-visible button"
+              class="ui blue not-visible button"
               id="register-pay-btn"
               name="register-pay-btn"
               onclick="submitPayment()"
@@ -177,23 +224,36 @@
           <div class="ui bottom attached warning message">
             <i class="icon help"></i> Si presenta alguna dificultad en el
             proceso de inscripción, por favor escríbanos al correo electrónico.
+            <a href="mailto:info@cogestec.co" target="_top">info@cogestec.co</a>
+          </div>
+          <div class="ui message">
+            <i class="compass outline"></i>
+            <h3>Serie de Pasos</h3>
+            <br />
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam
+            similique in alias odio veniam ex, consequuntur voluptatum, nostrum
+            ipsa, cupiditate laborum modi? Alias accusantium perspiciatis
+            molestias ad dolore tempore tempora.
           </div>
         </div>
-        <div class="ui tiny modal">
+        <div class="ui tiny modal ">
           <i class="close icon" onclick="location.reload('true')"></i>
           <div class="ui large center aligned green inverted header ">
             Usuario registrado satisfactoriamente!
           </div>
-          <div class="scrolling content">
+          <div class="content">
             <div id="result-msg" class="ui message"></div>
 
-            <form class="ui form" id="modal-form">
-              <div class="ui medium center aligned red inverted header">
+            <form class="ui form not-visible" id="modal-form">
+              <div
+                id="pay_info_modal"
+                class="ui medium center aligned inverted header"
+              >
                 <i class="icon lock"></i>
-                <div class="content">Información de Pago</div>
+                <div class="content">INFORMACIÓN DE PAGO</div>
               </div>
               <div class="inline field">
-                <label>*Nit o Cédula</label>
+                <label>*NIT o Cédula</label>
                 <input
                   class="numeric"
                   name="cedula_modal"
@@ -241,19 +301,19 @@
                   type="text"
                 />
               </div>
+              <br />
+              <div class="actions">
+                <a
+                  id="modal-payment"
+                  class="ui blue right labeled icon button fluid"
+                  onclick="modalPayment()"
+                  target=" _blank"
+                  href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111"
+                >
+                  Generar pago
+                </a>
+              </div>
             </form>
-            <br />
-            <div class="actions">
-              <a
-                id="modal-payment"
-                class="ui black right labeled icon button"
-                onclick="modalPayment()"
-                target=" _blank"
-                href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111"
-              >
-                Generar pago
-              </a>
-            </div>
           </div>
         </div>
       </div>

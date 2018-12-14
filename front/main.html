@@ -9,15 +9,16 @@
     });
 
     formValidation();
+    $(".ui.radio.checkbox").checkbox();
+    $(".ui.radio.checkbox").checkbox({
+      onChecked: function() {
+        console.log(this);
+      }
+    });
 
     $(".ui.modal").modal();
     $(".ui.modal").modal("setting", "closable", false);
-    // $(".ui.modal").modal({
-    //   blurring: true,
-    //   centered: true
 
-    // });
-    // $('#submit-btn').on('click',)
     $(".numeric").on("keypress", function(e) {
       return (
         e.metaKey || // cmd/ctrl
@@ -77,6 +78,8 @@
     console.log("all is ok", buttonpressed);
     // if (buttonpressed == "submit-btn") {
     formData.push({ name: "pago_generado", value: "NO" });
+    formData.push({ name: "documento_verificado", value: "NO" });
+
     // }
 
     console.log("form", formData);
@@ -86,7 +89,12 @@
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
       if (response.ok) {
-        loadPersonInModal(response.data);
+        console.log(buttonpressed);
+        if (String(buttonpressed).includes("submit-btn")) {
+          loadPersonInModal(response.data);
+        } else {
+          loadDiscountModal();
+        }
       } else {
         console.log("You fucked up", response);
       }
@@ -111,20 +119,30 @@
           he_pays = "437.000";
           concept = "Professional Attendant";
           $(".file-field").addClass("not-visible");
+          $("#ponencia_fields").addClass("not-visible");
           break;
+
         case "professional_r":
           he_pays = "322.000";
           concept = "Professional Researcher";
           $(".file-field").addClass("not-visible");
           break;
+
         case "student":
           he_pays = "287.500";
           concept = "Student";
+          $("#ponencia_fields").addClass("not-visible");
+          $("#submit-btn").addClass("not-visible");
+          $("#free-btn").removeClass("not-visible");
           break;
+
         case "student_r":
           he_pays = "230.000";
           concept = "Student Researcher";
+          $("#submit-btn").addClass("not-visible");
+          $("#free-btn").removeClass("not-visible");
           break;
+
         default:
           break;
       }
@@ -218,19 +236,21 @@
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                                                        El pago de su inscripción registrado satisfactoriamente.
-                                                      </div>`);
+                                                                    El pago de su inscripción registrado satisfactoriamente.
+                                                                  </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                                                            El pago de su inscripción aun no ha sido registrado.
-                                                          </div>`);
+                                                                        El pago de su inscripción aun no ha sido registrado.
+                                                                      </div>`);
     }
 
     $(".file-field").addClass("not-visible");
+    $("#politicas").addClass("not-visible");
+
     $("#submit-btn").addClass("not-visible");
     $("#submit-pay-btn").addClass("not-visible");
 
@@ -319,32 +339,51 @@
     $("#result-msg").text("");
     $(".ui.modal").modal("show");
     $(".actions").css("display", "block");
+    $("#modal-form").removeClass("not-visible");
+
     $("#result-msg")
-      .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago. 
-      Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+      .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago.
+                  Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+
+    $("input[name$='_modal']").prop("readonly", true);
+    $("input[name$='_modal']").addClass("not-allowed");
+
     $("input[name='nombres_modal']").val(person[0] + " " + person[1]);
-    $("input[name='nombres_modal']").prop("readonly", true);
-    $("input[name='nombres_modal']").addClass("not-allowed");
     $("input[name='cedula_modal']").val(person[2]);
-    $("input[name='cedula_modal']").prop("readonly", true);
-    $("input[name='cedula_modal']").addClass("not-allowed");
     $("input[name='telefono_modal']").val(person[4]);
-    $("input[name='telefono_modal']").prop("readonly", true);
-    $("input[name='telefono_modal']").addClass("not-allowed");
-    $("input[name='dependencia_modal']").val(person[5]);
-    $("input[name='dependencia_modal']").prop("readonly", true);
-    $("input[name='dependencia_modal']").addClass("not-allowed");
-    $("input[name='concepto_pago_modal']").val(person[6]);
-    $("input[name='concepto_pago_modal']").prop("readonly", true);
-    $("input[name='concepto_pago_modal']").addClass("not-allowed");
-    $("input[name='pago_total_modal']").val(person[7]);
-    $("input[name='pago_total_modal']").prop("readonly", true);
-    $("input[name='pago_total_modal']").addClass("not-allowed");
+    $("input[name='dependencia_modal']").val("COGESTEG 2019");
+    $("input[name='concepto_pago_modal']").val(person[5]);
+    $("input[name='pago_total_modal']").val(person[6]);
+  }
+
+  function loadDiscountModal() {
+    $("#form-form").removeClass("loading");
+    $("#result-msg").text("");
+    $(".ui.modal").modal("show");
+    $("#modal-form").addClass("not-visible");
+    $(".actions").css("display", "block");
+    $("#result-msg").text(
+      `Su solicitud para aplicar el descuento será estudiada y tendrá respuesta en un plazo máximo de tres días habiles vía correo electrónico, para que pueda proceder al pago de su inscripcion.`
+    );
   }
 
   function formValidation() {
     $.fn.form.settings.rules.file = function(value) {
       if ($(".file-field").hasClass("not-visible") || value.length > 0) {
+        return true;
+      }
+      return false;
+    };
+    $.fn.form.settings.rules.mEmail = function(value) {
+      var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (value.match(regex)) {
+        return true;
+      }
+      return false;
+    };
+    $.fn.form.settings.rules.ponencia = function(value) {
+      console.log("value ponencia", value);
+      if ($("#ponencia_fields").hasClass("not-visible") || value.length > 0) {
         return true;
       }
       return false;
@@ -430,17 +469,15 @@
             }
           ]
         },
-          
-        ponente: {
-          identifier: "ponente",
-          rules: [
-            {
-              type: "checked",
-              prompt: "Por favor acepte nuestras politicas para inscribirse"
-            }
-          ]
-        },
-          
+        // acepta_ponencia: {
+        //   identifier: "acepta_ponencia",
+        //   rules: [
+        //     {
+        //       type: "checked",
+        //       prompt: "Por favor seleccione una de las dos opciones"
+        //     }
+        //   ]
+        // },
         politicas: {
           identifier: "politicas",
           rules: [
@@ -454,7 +491,7 @@
           identifier: "correo",
           rules: [
             {
-              type: "email",
+              type: "mEmail",
               prompt: "Por favor ingrese a correo valido"
             },
             {

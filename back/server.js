@@ -5,13 +5,12 @@ var GENERAL_DB =
 
 function doGet(request) {
   var isAdmin = validateUserSession();
-  // readRequest(request);
-
-  if (isAdmin) {
+  var isAttendant = readRequestParameter(request);
+  if (isAdmin && isAttendant) {
     return createHtmlTemplate("index.html");
-  } else {
-    return createHtmlTemplate("close.html");
-  }
+  } else if (isAttendant) {
+    return createHtmlTemplate("index.html");
+  } else return createHtmlTemplate("close.html");
 }
 
 function validateUserSession() {
@@ -25,10 +24,15 @@ function validateUserSession() {
   return false;
 }
 
-function readRequest(request) {
+function readRequestParameter(request) {
+  var validQueries = ["student", "student_r", "professional", "professional_r"];
   if (typeof request !== "undefined") {
     var params = request.parameter;
     Logger.log(params.attendant);
+    if (validQueries.indexOf(params.attendant) > -1) {
+      return true;
+    }
+    return false;
   }
 }
 
@@ -103,7 +107,7 @@ function validatePerson(cedula) {
   var result = {
     isRegistered: false,
     index: -1,
-    data: null,
+    data: null
   };
   for (var person in inscritos) {
     if (String(inscritos[person].cedula) === String(cedula)) {

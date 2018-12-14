@@ -11,6 +11,10 @@
     margin-top: 60px;
   }
 
+  .logo{
+    padding-bottom: 3px; 
+  }
+
   input:not([name="correo"]) {
     text-transform: uppercase;
   }
@@ -29,9 +33,15 @@
 
   .ui.modal {
     position: fixed !important;
-    top: 40% !important;
+    top: 35% !important;
     left: 15% !important;
     width: 70%;
+  }
+
+  #pay_info_modal{
+    color: white;
+    background-color: red;
+    padding: 8px;
   }
 
   #id-search {
@@ -57,17 +67,21 @@
 
    .inline.field > label{
     color: red !important;
+    min-width: 10em;
+    font-family: Verdana;
   }
 
    .inline.field > input{
     border-color: #00b8ff !important;
     min-width: 20em;
+    font-family: Verdana;
   }
   
 
   @media (max-width: 767px) {
     .modal.tiny {
       width: 70% !important;
+      top:35%
     }
   }
 </style>
