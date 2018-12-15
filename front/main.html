@@ -1,8 +1,9 @@
 <script type="text/babel">
   $(document).ready(init_js);
-  var buttonpressed;
-  var personIndex;
-  var requestPayload;
+  var buttonpressed = undefined;
+  var personIndex = -1;
+  var requestPayload = null;
+  var radioPressed = undefined;
   function init_js() {
     $(".submit.button").click(function() {
       buttonpressed = $(this).attr("name");
@@ -12,7 +13,7 @@
     $(".ui.radio.checkbox").checkbox();
     $(".ui.radio.checkbox").checkbox({
       onChecked: function() {
-        console.log(this);
+        radioPressed = $(this).attr("value");
       }
     });
 
@@ -38,12 +39,21 @@
     });
   }
 
+  function validateDate() {
+    var someDate = new Date("6 Dec 2011").toDateString();
+    var today = new Date().toDateString();
+    var datesAreSame = today === someDate;
+  }
+
   function validationpassed(e) {
     try {
       e.preventDefault();
       var mForm = $("#form-form");
       var formData = mForm.serializeArray();
       mForm.addClass("loading");
+      if (!radioPressed) {
+        formData.push({ name: "acepta_ponencia", value: "-" });
+      }
 
       if (!$(".file-field").hasClass("not-visible")) {
         var file = $('input[type="file"]').prop("files")[0];
@@ -77,7 +87,7 @@
   function addPayment(formData) {
     console.log("all is ok", buttonpressed);
     // if (buttonpressed == "submit-btn") {
-    formData.push({ name: "pago_generado", value: "NO" });
+    //formData.push({ name: "pago_generado", value: "NO" });
     formData.push({ name: "documento_verificado", value: "NO" });
 
     // }
@@ -236,16 +246,16 @@
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                                                                    El pago de su inscripción registrado satisfactoriamente.
-                                                                  </div>`);
+                                                                        El pago de su inscripción registrado satisfactoriamente.
+                                                                      </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                                                                        El pago de su inscripción aun no ha sido registrado.
-                                                                      </div>`);
+                                                                            El pago de su inscripción aun no ha sido registrado.
+                                                                          </div>`);
     }
 
     $(".file-field").addClass("not-visible");
@@ -343,7 +353,7 @@
 
     $("#result-msg")
       .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago.
-                  Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+                      Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
 
     $("input[name$='_modal']").prop("readonly", true);
     $("input[name$='_modal']").addClass("not-allowed");
@@ -383,7 +393,7 @@
     };
     $.fn.form.settings.rules.ponencia = function(value) {
       console.log("value ponencia", value);
-      if ($("#ponencia_fields").hasClass("not-visible") || value.length > 0) {
+      if ($("#ponencia_fields").hasClass("not-visible") || radioPressed) {
         return true;
       }
       return false;
@@ -469,15 +479,15 @@
             }
           ]
         },
-        // acepta_ponencia: {
-        //   identifier: "acepta_ponencia",
-        //   rules: [
-        //     {
-        //       type: "checked",
-        //       prompt: "Por favor seleccione una de las dos opciones"
-        //     }
-        //   ]
-        // },
+        acepta_ponencia: {
+          identifier: "acepta_ponencia",
+          rules: [
+            {
+              type: "ponencia",
+              prompt: "Por favor seleccione una de las dos opciones"
+            }
+          ]
+        },
         politicas: {
           identifier: "politicas",
           rules: [
