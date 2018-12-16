@@ -13,6 +13,20 @@ function doGet(request) {
   } else return createHtmlTemplate("close.html");
 }
 
+function doPost(request) {
+  Logger.log("request");
+  Logger.log(request);
+
+  if (typeof request != "undefined") {
+    Logger.log(request);
+    var params = request.parameter;
+    Logger.log("params");
+    Logger.log(params);
+    sendConfirmationEmail()
+    return ContentService.createTextOutput(JSON.stringify(request.parameter));
+  }
+}
+
 function validateUserSession() {
   var guess_email = Session.getActiveUser().getEmail();
   if (
@@ -181,6 +195,19 @@ function createPersonFolder(numdoc, data) {
   file.setName(numdoc + "_documento");
   result.file = file.getName();
   return result;
+}
+function sendConfirmationEmail() {
+  MailApp.sendEmail({
+    to:
+      "andresfelipe9619@correounivalle.edu.co",
+    subject:
+      "Inscripción " + 2,
+      // periodo +
+      // " " +
+      // subModule ,
+    // htmlBody: filetoSend + links,
+    name: "SEMILLEROS UNIVALLE"
+  });
 }
 
 function getSheetFromSpreadSheet(url, sheet) {
