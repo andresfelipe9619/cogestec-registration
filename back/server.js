@@ -22,7 +22,6 @@ function doPost(request) {
     var params = request.parameter;
     Logger.log("params");
     Logger.log(params);
-    sendConfirmationEmail()
     return ContentService.createTextOutput(JSON.stringify(request.parameter));
   }
 }
@@ -196,19 +195,7 @@ function createPersonFolder(numdoc, data) {
   result.file = file.getName();
   return result;
 }
-function sendConfirmationEmail() {
-  MailApp.sendEmail({
-    to:
-      "andresfelipe9619@correounivalle.edu.co",
-    subject:
-      "Inscripción " + 2,
-      // periodo +
-      // " " +
-      // subModule ,
-    // htmlBody: filetoSend + links,
-    name: "SEMILLEROS UNIVALLE"
-  });
-}
+
 
 function getSheetFromSpreadSheet(url, sheet) {
   var Spreedsheet = SpreadsheetApp.openByUrl(url);
