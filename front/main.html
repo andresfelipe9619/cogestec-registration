@@ -2,18 +2,23 @@
   $(document).ready(init_js);
   var buttonpressed = undefined;
   var personIndex = -1;
+  var currentPerson = null;
   var requestPayload = null;
   var radioPressed = undefined;
+
   function init_js() {
     $(".submit.button").click(function() {
       buttonpressed = $(this).attr("name");
     });
 
-    formValidation();
     $(".ui.radio.checkbox").checkbox();
     $(".ui.radio.checkbox").checkbox({
       onChecked: function() {
         radioPressed = $(this).attr("value");
+        console.log("radio", radioPressed);
+        if (currentPerson) {
+          handleRadioChange(radioPressed);
+        }
       }
     });
 
@@ -86,18 +91,15 @@
 
   function addPayment(formData) {
     console.log("all is ok", buttonpressed);
-    // if (buttonpressed == "submit-btn") {
-    //formData.push({ name: "pago_generado", value: "NO" });
     formData.push({ name: "documento_verificado", value: "NO" });
-
-    // }
-
     console.log("form", formData);
     registerPersonInSheet(formData);
   }
 
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
+      console.log('register response', response);
+
       if (response.ok) {
         console.log(buttonpressed);
         if (String(buttonpressed).includes("submit-btn")) {
@@ -165,6 +167,10 @@
       $("input[name='pago_total']").addClass("not-allowed");
     }
   }
+  function handleRadioChange(radio) {
+    $("#msg-change").removeClass("not-visible");
+  }
+
   function searchForPerson() {
     hideForm();
     $("#btn-search").addClass("loading");
@@ -180,6 +186,7 @@
         if (person.isRegistered) {
           loadPersonInForm(person);
         } else {
+          formValidation();
           getRequestPayload();
           $("#form-form").removeClass("loading");
         }
@@ -233,6 +240,7 @@
   function loadPersonInForm(person) {
     console.log("Person in form", person);
     personIndex = Number(person.index) + 1;
+    currentPerson = person.data;
     $("input[name='nombres']").val(person.data.nombres);
     $("input[name='apellidos']").val(person.data.apellidos);
     $("input[name='cedula']").val(person.data.cedula);
@@ -241,21 +249,29 @@
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     $("input[name='pago_total']").val(person.data.pago_total);
+    $(".ui.radio").checkbox()
+    if (person.data["acepta_ponencia"] == "SI") {
+      $("input[id='ponencia_si']").checkbox("check");
+    } else if (person.data["acepta_ponencia"] == "NO") {
+      $("input[id='ponencia_no']").checkbox("check");
+    } else {
+      $("#ponencia_fields").addClass("not-visible");
+    }
     if (person.data["pago_comprobado"] == "SI") {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
       $("#pay-msg").append(`<i class="icon check circle"></i>
-                                                                        El pago de su inscripción registrado satisfactoriamente.
-                                                                      </div>`);
+                El pago de su inscripción registrado satisfactoriamente.
+              </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
 
       $("#pay-msg").append(`<i class="icon warning "></i>
-                                                                            El pago de su inscripción aun no ha sido registrado.
-                                                                          </div>`);
+                El pago de su inscripción aun no ha sido registrado.
+              </div>`);
     }
 
     $(".file-field").addClass("not-visible");
@@ -264,7 +280,7 @@
     $("#submit-btn").addClass("not-visible");
     $("#submit-pay-btn").addClass("not-visible");
 
-    if (person.data["pago_generado"] == "NO") {
+    if (person.data["pago_comprobado"] == "NO") {
       $("#register-pay-btn").removeClass("not-visible");
       $("#register-pay-btn").addClass("visible");
     }
@@ -307,18 +323,9 @@
   function submitPayment() {
     $("#register-pay-btn").addClass("loading");
 
-    if (personIndex > -1) {
-      function onSuccess(result) {
-        $("#register-pay-btn").removeClass("loading");
-        if (result) {
-          console.log("result", result);
-          hideForm();
-          return true;
-        }
-      }
-      return google.script.run
-        .withSuccessHandler(onSuccess)
-        .generatePayment(personIndex);
+    if (currentPerson) {
+      loadPersonInModal(currentPerson);
+      $("#register-pay-btn").removeClass("loading");
     }
   }
 
@@ -353,17 +360,20 @@
 
     $("#result-msg")
       .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago.
-                      Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+                              Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
 
     $("input[name$='_modal']").prop("readonly", true);
     $("input[name$='_modal']").addClass("not-allowed");
 
-    $("input[name='nombres_modal']").val(person[0] + " " + person[1]);
-    $("input[name='cedula_modal']").val(person[2]);
-    $("input[name='telefono_modal']").val(person[4]);
+    $("input[name='nombres_modal']").val(
+      person.nombres + " " + person.apellidos
+    );
+    $("input[name='cedula_modal']").val(person.cedula);
+    $("input[name='telefono_modal']").val(person.telefono);
     $("input[name='dependencia_modal']").val("COGESTEG 2019");
-    $("input[name='concepto_pago_modal']").val(person[5]);
-    $("input[name='pago_total_modal']").val(person[6]);
+    $("input[name='concepto_pago_modal']").val(person.concepto_pago);
+    $("input[name='pago_total_modal']").val(person.pago_total);
+    $(".ui.modal").modal("refresh");
   }
 
   function loadDiscountModal() {

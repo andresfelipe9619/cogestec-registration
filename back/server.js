@@ -89,14 +89,23 @@ function registerPerson(person) {
   var finalValues = personValues.map(function(value) {
     return String(value);
   });
-
+  var nicePerson =   {
+    cedula: personValues[2],
+    nombres: personValues[0],
+    apellidos: personValues[1],
+    email: personValues[3],
+    pago_total: personValues[6],
+    concepto_pago: personValues[5],
+    dependecia: "COGESTEC 2019",
+    telefono: personValues[4]
+  };;
   inscritosSheet.appendRow(finalValues);
-  var result = { data: finalValues, ok: true };
+  var result = { data: nicePerson, ok: true };
   logFunctionOutput(registerPerson.name, result);
   return result;
 }
 
-function generatePayment(index) {
+function changePonencia(index, value) {
   var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
   var headers = inscritosSheet.getSheetValues(
     1,
@@ -104,14 +113,14 @@ function generatePayment(index) {
     1,
     inscritosSheet.getLastColumn()
   )[0];
-  var pagoIndex = headers.indexOf("PAGO_GENERADO");
+  var pagoIndex = headers.indexOf("ACEPTA_PONENCIA");
   Logger.log(pagoIndex);
   Logger.log(index);
   logFunctionOutput(
     generatePayment.name,
     inscritosSheet.getRange(index, pagoIndex).getValues()
   );
-  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([["SI"]]);
+  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[value]]);
   return true;
 }
 
@@ -237,6 +246,10 @@ function objectToSheetValues(object, headers) {
   }
   //logFunctionOutput(objectToSheetValues.name, arrayValues)
   return arrayValues;
+}
+
+function serializeFormObject(){
+
 }
 
 function sheetValuesToObject(sheetValues) {

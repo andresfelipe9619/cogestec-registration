@@ -159,6 +159,7 @@
               <div class="field">
                 <div class="ui radio checkbox ">
                   <input
+                    id="ponencia_no"
                     name="acepta_ponencia"
                     type="radio"
                     value="NO"
@@ -171,6 +172,7 @@
               <div class="field">
                 <div class="ui radio checkbox">
                   <input
+                    id="ponencia_si"
                     name="acepta_ponencia"
                     type="radio"
                     value="SI"
@@ -180,9 +182,18 @@
                   <label>SI</label>
                 </div>
               </div>
+              <div id="msg-change" class="ui info message not-visible">
+                <div class="header">
+                  ¿Está seguro que quieres cambiar el estado de sus ponencias?
+                </div>
+                <div class="inline">
+                  <div class="ui primary button">ACEPTAR</div>
+                  <div class="ui button">CANCELAR</div>
+                </div>
+              </div>
             </div>
             <div class="field content">
-              <div class="ui checkbox" id="politicas"> 
+              <div class="ui checkbox" id="politicas">
                 <input name="politicas" type="checkbox" />
                 <label
                   >Acepto las
@@ -210,14 +221,12 @@
             >
               Solicitar descuento
             </div>
-            <a
+            <button
               class="ui blue not-visible button"
               id="register-pay-btn"
               name="register-pay-btn"
               onclick="submitPayment()"
-              target=" _blank"
-              href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111"
-              >Generar pago</a
+              >Generar pago</button
             >
           </form>
 
