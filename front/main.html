@@ -21,6 +21,7 @@
         }
       }
     });
+    formValidation();
 
     $(".ui.modal").modal();
     $(".ui.modal").modal("setting", "closable", false);
@@ -186,7 +187,7 @@
         if (person.isRegistered) {
           loadPersonInForm(person);
         } else {
-          formValidation();
+          // formValidation();
           getRequestPayload();
           $("#form-form").removeClass("loading");
         }
@@ -312,7 +313,6 @@
     };
 
     var cedula = $("#busca-cedula").val();
-    $("#modal-payment").addClass("loading");
     if (cedula.length > 0) {
       return google.script.run
         .withSuccessHandler(onSuccess)
@@ -324,8 +324,8 @@
     $("#register-pay-btn").addClass("loading");
 
     if (currentPerson) {
-      loadPersonInModal(currentPerson);
       $("#register-pay-btn").removeClass("loading");
+      loadPersonInModal(currentPerson);
     }
   }
 
