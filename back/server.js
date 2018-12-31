@@ -80,7 +80,10 @@ function registerPerson(person) {
     1,
     inscritosSheet.getLastColumn()
   )[0];
-  person.push({ name: "hora_registro", value: new Date() });
+  person.push({
+    name: "hora_registro",
+    value: new Date().toLocaleDateString()
+  });
   person.push({ name: "pago_comprobado", value: "NO" });
 
   logFunctionOutput("person", person);
@@ -89,7 +92,7 @@ function registerPerson(person) {
   var finalValues = personValues.map(function(value) {
     return String(value);
   });
-  var nicePerson =   {
+  var nicePerson = {
     cedula: personValues[2],
     nombres: personValues[0],
     apellidos: personValues[1],
@@ -98,7 +101,7 @@ function registerPerson(person) {
     concepto_pago: personValues[5],
     dependecia: "COGESTEC 2019",
     telefono: personValues[4]
-  };;
+  };
   inscritosSheet.appendRow(finalValues);
   var result = { data: nicePerson, ok: true };
   logFunctionOutput(registerPerson.name, result);
@@ -140,12 +143,10 @@ function validatePerson(cedula) {
   }
   logFunctionOutput(validatePerson.name, result);
 
-  if (result.index > -1) {
-    return result;
-  } else {
+  if (result.index < 0) {
     result.isRegistered = false;
-    return result;
   }
+  return JSON.stringify(result);
 }
 
 function getPersonFolder(name, mainFolder) {
@@ -205,7 +206,6 @@ function createPersonFolder(numdoc, data) {
   return result;
 }
 
-
 function getSheetFromSpreadSheet(url, sheet) {
   var Spreedsheet = SpreadsheetApp.openByUrl(url);
   if (url && sheet) return Spreedsheet.getSheetByName(sheet);
@@ -246,10 +246,6 @@ function objectToSheetValues(object, headers) {
   }
   //logFunctionOutput(objectToSheetValues.name, arrayValues)
   return arrayValues;
-}
-
-function serializeFormObject(){
-
 }
 
 function sheetValuesToObject(sheetValues) {

@@ -60,7 +60,7 @@ function sendConfirmationEmail(payload) {
         to: payload.person.email,
         subject: "Inscripción verificada",
         name: "COGESTEC 2019",
-        // attachments:,
+        // attachments: [],
         htmlBody: body
       });
     } else if (payload.type == "PAY") {
@@ -86,19 +86,40 @@ function createHtmlBody(payload) {
 }
 
 function generateQR(person) {
+  var body = "";
   var qrserver = "http://api.qrserver.com/v1/create-qr-code/";
-
+  var successMsg = "<p>Cordial saludo "+person.nombres + " "+ person.apellidos +
+  ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor,"+
+  " presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>";
+  if(person.concepto_pago.contains("esearcher")){
+    successMsg += "Cordial saludo (nombre y apellidos), bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor, presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento."+
+    "(adicionar banner publicitario del evento académico)"+
+    "Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/"+
+    "Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico."
+  }else {
+    successMsg += 
+    "<p>Recuerda que obtendrás certificado como ponente por presentar tu ponencia en la fecha y hora asignadas y como asistente al evento, al pasar por la mesa de registro el día del evento."+
+    "Recuerda que siempre podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/"+
+    "La información de interés para ponentes se encuentra en el siguiente enlace:"+
+    "http://www.cogestec.co/ponentes"+
+    "Te agradecemos por hacer parte de la historia de la innovación en Colombia, esperamos conozcas personas y empresas interesadas en la innovación como tú, de la que puedan construir relaciones de mutuo beneficio."+
+    "COGESTEC 2019 te desea un excelente día.</p>"
+  }
+  body = successMsg;
   var qrimage =
+    '' +
     '<img src="' +
     qrserver +
     "?color=000000&amp;bgcolor=FFFFFF&amp;" +
     "data=" +
     person.cedula +
     '&amp;qzone=1&amp;margin=0&amp;size=400x400&amp;ecc=L" alt="qr code" />';
+    successMsg += body;
   return qrimage;
 }
 
 function generateModal(person) {
+
   var modal =
     "<!DOCTYPE html>" +
     "<html>" +
@@ -112,7 +133,7 @@ function generateModal(person) {
     "<?!= include('style'); ?>" +
     " </head><body>" +
     '<div class="content">' +
-    '<div id="result-msg" class="ui message"></div>' +
+    '<div id="result-msg" class="ui message">'+successMsg +'</div>' +
     '<form class="ui form not-visible" id="modal-form">' +
     '<div id="pay_info_modal" ' +
     'class="ui medium center aligned inverted header">' +

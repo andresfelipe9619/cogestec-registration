@@ -99,7 +99,7 @@
 
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
-      console.log('register response', response);
+      console.log("register response", response);
 
       if (response.ok) {
         console.log(buttonpressed);
@@ -176,7 +176,8 @@
     hideForm();
     $("#btn-search").addClass("loading");
 
-    var onSuccess = function(person) {
+    var onSuccess = function(result) {
+      var person = JSON.parse(result);
       if (person) {
         showForm();
         $("#form-form").addClass("loading");
@@ -250,7 +251,7 @@
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     $("input[name='pago_total']").val(person.data.pago_total);
-    $(".ui.radio").checkbox()
+    $(".ui.radio").checkbox();
     if (person.data["acepta_ponencia"] == "SI") {
       $("input[id='ponencia_si']").checkbox("check");
     } else if (person.data["acepta_ponencia"] == "NO") {
@@ -262,16 +263,16 @@
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("warning");
       $("#pay-msg").addClass("success");
-      $("#pay-msg").append(`<i class="icon check circle"></i>
+      $("#pay-msg").html(`<i class="icon check circle"></i>
                 El pago de su inscripción registrado satisfactoriamente.
               </div>`);
     } else {
       $("#pay-msg").removeClass("not-visible");
       $("#pay-msg").removeClass("success");
       $("#pay-msg").addClass("warning");
-
-      $("#pay-msg").append(`<i class="icon warning "></i>
+      $("#pay-msg").html(`<i class="icon warning "></i>
                 El pago de su inscripción aun no ha sido registrado.
+                Usted ha sido registrado como ${person.data.concepto_pago}
               </div>`);
     }
 
@@ -358,12 +359,12 @@
     $(".actions").css("display", "block");
     $("#modal-form").removeClass("not-visible");
 
-    $("#result-msg")
-      .text(`Por favor tenga en cuenta esta información para registrar su proceso de pago.
-                              Al dar clic en "Generar pago" aparecerá un formulario, deberá diligenciarlo tal cual aparece en este formato`);
+    $("#result-msg").text(`
+    Por favor, copie la información que mostramos a continuación 
+    en el formulario de pago de inscripción (Botón azul).`);
 
     $("input[name$='_modal']").prop("readonly", true);
-    $("input[name$='_modal']").addClass("not-allowed");
+    // $("input[name$='_modal']").addClass("not-allowed");
 
     $("input[name='nombres_modal']").val(
       person.nombres + " " + person.apellidos
