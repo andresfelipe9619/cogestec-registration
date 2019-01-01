@@ -11,16 +11,16 @@
       buttonpressed = $(this).attr("name");
     });
 
-    $(".ui.radio.checkbox").checkbox();
-    $(".ui.radio.checkbox").checkbox({
-      onChecked: function() {
-        radioPressed = $(this).attr("value");
-        console.log("radio", radioPressed);
-        if (currentPerson) {
-          handleRadioChange(radioPressed);
-        }
-      }
-    });
+    // $(".ui.radio.checkbox").checkbox();
+    // $(".ui.radio.checkbox").checkbox({
+    //   onChecked: function() {
+    //     radioPressed = $(this).attr("value");
+    //     console.log("radio", radioPressed);
+    //     if (currentPerson) {
+    //       handleRadioChange(radioPressed);
+    //     }
+    //   }
+    // });
     formValidation();
 
     $(".ui.modal").modal();
@@ -91,8 +91,7 @@
   }
 
   function addPayment(formData) {
-    console.log("all is ok", buttonpressed);
-    formData.push({ name: "documento_verificado", value: "NO" });
+    formData.push({ name: "documento_verificado", value: "-" });
     console.log("form", formData);
     registerPersonInSheet(formData);
   }
@@ -104,9 +103,9 @@
       if (response.ok) {
         console.log(buttonpressed);
         if (String(buttonpressed).includes("submit-btn")) {
-          loadPersonInModal(response.data);
+          showPersonInModal(response.data);
         } else {
-          loadDiscountModal();
+          showDiscountModal();
         }
       } else {
         console.log("You fucked up", response);
@@ -186,9 +185,8 @@
         $("input[name='cedula']").prop("readonly", true);
         $("input[name='cedula']").addClass("not-allowed");
         if (person.isRegistered) {
-          loadPersonInForm(person);
+          showPersonInForm(person);
         } else {
-          // formValidation();
           getRequestPayload();
           $("#form-form").removeClass("loading");
         }
@@ -239,6 +237,24 @@
     };
   })();
 
+  function showPersonInForm(person) {
+    loadPersonInForm(person);
+
+    if (person.data["pago_comprobado"] == "SI") {
+      showPaymentApproved();
+    } else {
+      showPaymentDisapproved(person);
+    }
+
+    $(".file-field").addClass("not-visible");
+    $("#politicas").addClass("not-visible");
+    $("#submit-btn").addClass("not-visible");
+    $("#submit-pay-btn").addClass("not-visible");
+
+    disableFormFielfds(true);
+    $("#form-form").removeClass("loading");
+  }
+
   function loadPersonInForm(person) {
     console.log("Person in form", person);
     personIndex = Number(person.index) + 1;
@@ -251,43 +267,36 @@
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     $("input[name='pago_total']").val(person.data.pago_total);
-    $(".ui.radio").checkbox();
-    if (person.data["acepta_ponencia"] == "SI") {
-      $("input[id='ponencia_si']").checkbox("check");
-    } else if (person.data["acepta_ponencia"] == "NO") {
-      $("input[id='ponencia_no']").checkbox("check");
-    } else {
-      $("#ponencia_fields").addClass("not-visible");
-    }
-    if (person.data["pago_comprobado"] == "SI") {
-      $("#pay-msg").removeClass("not-visible");
-      $("#pay-msg").removeClass("warning");
-      $("#pay-msg").addClass("success");
-      $("#pay-msg").html(`<i class="icon check circle"></i>
+    // $(".ui.radio").checkbox();
+
+    // if (person.data["acepta_ponencia"] == "SI") {
+    //   $("input[id='ponencia_si']").checkbox("check");
+    // } else if (person.data["acepta_ponencia"] == "NO") {
+    //   $("input[id='ponencia_no']").checkbox("check");
+    // } else {
+    //   $("#ponencia_fields").addClass("not-visible");
+    // }
+  }
+
+  function showPaymentApproved(person) {
+    $("#pay-msg").removeClass("not-visible");
+    $("#pay-msg").removeClass("warning");
+    $("#pay-msg").addClass("success");
+    $("#pay-msg").html(`<i class="icon check circle"></i>
                 El pago de su inscripción registrado satisfactoriamente.
               </div>`);
-    } else {
-      $("#pay-msg").removeClass("not-visible");
-      $("#pay-msg").removeClass("success");
-      $("#pay-msg").addClass("warning");
-      $("#pay-msg").html(`<i class="icon warning "></i>
+  }
+
+  function showPaymentDisapproved(person) {
+    $("#pay-msg").removeClass("not-visible");
+    $("#pay-msg").removeClass("success");
+    $("#pay-msg").addClass("warning");
+    $("#pay-msg").html(`<i class="icon warning "></i>
                 El pago de su inscripción aun no ha sido registrado.
                 Usted ha sido registrado como ${person.data.concepto_pago}
               </div>`);
-    }
-
-    $(".file-field").addClass("not-visible");
-    $("#politicas").addClass("not-visible");
-
-    $("#submit-btn").addClass("not-visible");
-    $("#submit-pay-btn").addClass("not-visible");
-
-    if (person.data["pago_comprobado"] == "NO") {
-      $("#register-pay-btn").removeClass("not-visible");
-      $("#register-pay-btn").addClass("visible");
-    }
-    disableFormFielfds(true);
-    $("#form-form").removeClass("loading");
+    $("#register-pay-btn").removeClass("not-visible");
+    $("#register-pay-btn").addClass("visible");
   }
 
   function modalPayment() {
@@ -326,7 +335,7 @@
 
     if (currentPerson) {
       $("#register-pay-btn").removeClass("loading");
-      loadPersonInModal(currentPerson);
+      showPersonInModal(currentPerson);
     }
   }
 
@@ -341,6 +350,7 @@
     $("#mainForm").css("display", "none");
     $(".fields.regreso").removeClass("not-allowed");
     $(".file-field").removeClass("not-visible");
+    $(".pay-field").removeClass("not-visible");
     $("#submit-btn").removeClass("not-visible");
     $("#submit-pay-btn").removeClass("not-visible");
 
@@ -352,7 +362,7 @@
     $("#form-form").form("clear");
   }
 
-  function loadPersonInModal(person) {
+  function showPersonInModal(person) {
     $("#form-form").removeClass("loading");
     $("#result-msg").text("");
     $(".ui.modal").modal("show");
@@ -377,7 +387,7 @@
     $(".ui.modal").modal("refresh");
   }
 
-  function loadDiscountModal() {
+  function showDiscountModal() {
     $("#form-form").removeClass("loading");
     $("#result-msg").text("");
     $(".ui.modal").modal("show");
@@ -390,11 +400,18 @@
 
   function formValidation() {
     $.fn.form.settings.rules.file = function(value) {
+      if ($(this).hasClass("not-visible") || value.length > 0) {
+        return true;
+      }
+      return false;
+    };
+    $.fn.form.settings.rules.file = function(value) {
       if ($(".file-field").hasClass("not-visible") || value.length > 0) {
         return true;
       }
       return false;
     };
+
     $.fn.form.settings.rules.mEmail = function(value) {
       var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (value.match(regex)) {
@@ -523,6 +540,15 @@
         },
         doc_file: {
           identifier: "doc_file",
+          rules: [
+            {
+              type: "file",
+              prompt: "Por favor ingrese un archivo"
+            }
+          ]
+        },
+        pay_file: {
+          identifier: "pay_file",
           rules: [
             {
               type: "file",

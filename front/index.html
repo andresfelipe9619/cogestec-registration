@@ -141,13 +141,26 @@
                 accept="application/pdf "
               />
             </div>
+            <div class="field support-field not-visible">
+              <label for="pay_file"
+                ><strong>SOPORTE DE PAGO</strong> <br />
+                Por favor, cargar un SOPORTE DE PAGO que le acredite como
+                estudiante pregrado activo (formato .PDF)</label
+              >
+              <input
+                type="file"
+                id="pay_file"
+                name="pay_file"
+                accept="application/pdf "
+              />
+            </div>
             <div id="ponencia_fields" class="inline fields">
               <label
                 >En caso de ser aceptada la ponencia, autorizo que sea publicada
                 en las memorias del Congreso (con ISBN)</label
               >
               <div class="field">
-                <div class="ui radio checkbox ">
+                <div>
                   <input
                     id="ponencia_no"
                     name="acepta_ponencia"
@@ -160,7 +173,7 @@
                 </div>
               </div>
               <div class="field">
-                <div class="ui radio checkbox">
+                <div>
                   <input
                     id="ponencia_si"
                     name="acepta_ponencia"
