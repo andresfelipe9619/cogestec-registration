@@ -1,7 +1,6 @@
 var SELECTED_PERSON = { data: null, type: null, isApproved: false };
 function onSpreadSheetEdit(e) {
   var range = e.range;
-  Logger.log(range);
   checkEditedCell(range);
 }
 
@@ -13,11 +12,10 @@ function checkEditedCell(range) {
     1,
     sheet.getLastColumn()
   );
-  Logger.log(sheetValues);
   var rawPerson = sheetValues[0];
-  rawPerson = rawPerson.map(function(value){
+  rawPerson = rawPerson.map(function(value) {
     return value.toString();
-  })
+  });
   SELECTED_PERSON.data = {
     cedula: rawPerson[2],
     nombre: rawPerson[0] + " " + rawPerson[1],
@@ -32,13 +30,10 @@ function checkEditedCell(range) {
   } else if (range.getColumn() == 10) {
     handleOnDocumentChange(range);
   }
-  Logger.log(SELECTED_PERSON);
 }
 
 function handleOnPaymentChange(range) {
   SELECTED_PERSON.type = "PAY";
-  Logger.log(typeof SELECTED_PERSON.data.concepto_pago);
-  Logger.log(SELECTED_PERSON.data.concepto_pago)
   if (range.getValue() == "SI") {
     if (SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1) {
       sendResearcherPayApprovedMail();
@@ -53,7 +48,7 @@ function handleOnPaymentChange(range) {
 function handleOnDocumentChange(range) {
   SELECTED_PERSON.type = "DOC";
   if (range.getValue() == "SI") {
-    sendDosendcApprovedMail();
+    sendDocApprovedMail();
   } else if (range.getValue() == "NO") {
     sendDocDisapprovedMail();
   }
@@ -87,7 +82,7 @@ function sendPayDisapprovedMail() {}
 
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
-  var body = "";
+  Logger.log(body);
   if (SELECTED_PERSON.data) {
     MailApp.sendEmail({
       to: SELECTED_PERSON.data.email,
@@ -116,17 +111,14 @@ function buildResearcherPayApprovedBody() {
   var body = "";
   var successMsg =
     "<p>Cordial saludo " +
-    SELECTED_PERSON.data.nombres +
-    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor," +
-    " presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>";
-  +"Cordial saludo (nombre y apellidos), bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor, presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento." +
-    "(adicionar banner publicitario del evento académico)" +
-    "Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/" +
-    "Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.";
-  "La información de interés para ponentes se encuentra en el siguiente enlace:" +
-    "http://www.cogestec.co/ponentes" +
-    "Te agradecemos por hacer parte de la historia de la innovación en Colombia, esperamos conozcas personas y empresas interesadas en la innovación como tú, de la que puedan construir relaciones de mutuo beneficio." +
-    "COGESTEC 2019 te desea un excelente día.</p>";
+    SELECTED_PERSON.data.nombre +
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor, " +
+    "presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
+    "<p>Recuerda que obtendrás certificado como ponente por presentar tu ponencia en la fecha y hora asignadas y como asistente al evento, al pasar por la mesa de registro el día del evento.</p>" +
+    '<p>Recuerda que siempre podrás consultar la agenda en el siguiente enlace: <a href="http://www.cogestec.co/agenda/">http://www.cogestec.co/agenda/</a></p>' +
+    '<p>La información de interés para ponentes se encuentra en el siguiente enlace: <a href="http://www.cogestec.co/ponentes/">http://www.cogestec.co/ponentes/</a></p>' +
+    "<p>Te agradecemos por hacer parte de la historia de la innovación en Colombia, esperamos conozcas personas y empresas interesadas en la innovación como tú, de la que puedan construir relaciones de mutuo beneficio.</p>" +
+    "<p>COGESTEC 2019 te desea un excelente día.</p>";
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
@@ -136,11 +128,13 @@ function buildResearcherPayApprovedBody() {
 function buildAttendantPayApprovedBody() {
   var body = "";
   var successMsg =
-    "<p>Cordial saludo (nombre y apellidos), bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
-    " en este email adjuntaremos un código QR, por favor, presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento." +
-    "(adicionar banner publicitario del evento académico)" +
-    "Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/" +
-    "Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.</p>";
+    "<p>Cordial saludo " +
+    SELECTED_PERSON.data.nombre +
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
+    " en este email adjuntaremos un código QR, por favor, presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
+    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' +
+    "<br/>Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/" +
+    "<p>Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.</p>";
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
@@ -150,23 +144,30 @@ function buildAttendantPayApprovedBody() {
 function buildDocDisapprovedBody() {
   var body = "";
   var successMsg =
-    "<p>Cordial saludo (nombre y apellidos), lamentamos informar que tu solicitud de descuento ha sido denegada puesto que," +
-    "la información adjunta es insuficiente para comprobar tu estado actual como estudiante de pregrado activo." +
-    "No te preocupes, aún puedes participar como asistente." +
-    "(Adjuntar la información para pago como asistente).</p>";
-  body = successMsg;
+    "<p>Cordial saludo" +
+    SELECTED_PERSON.data.nombre +
+    ", lamentamos informar que tu solicitud de descuento ha sido denegada puesto que," +
+    "la información adjunta es insuficiente para comprobar tu estado actual como estudiante de pregrado activo.</p>" +
+    "<p>No te preocupes, aún puedes participar como asistente.</p>";
+  var modal = buildModal(successMsg);
+  body = body.concat(modal);
   return body;
 }
 
 function buildDocApprovedBody() {
-  var successMsg = "<p></p>";
+  var body = "";
+  var successMsg =
+    "<p>Cordial saludo " +
+    SELECTED_PERSON.data.nombre +
+    ", ha sido aprobada tu solicitud de descuento, felicitaciones.</p>" +
+    "<p>A continuación la información que deberás copiar en el formulario de pago.</p>";
+    var modal = buildModal(successMsg);
+    body = body.concat(modal);
+    return body;
+}
+
+function buildModal(successMsg) {
   var modal =
-    "<!DOCTYPE html>" +
-    "<html>" +
-    "<head>" +
-    '<base target="_top" />' +
-    '<meta http-equiv="Content-Security-Policy" content="connect-src http:" />' +
-    " </head><body>" +
     '<div class="content">' +
     '<div id="result-msg" class="ui message">' +
     successMsg +
@@ -175,67 +176,56 @@ function buildDocApprovedBody() {
     '<div id="pay_info_modal" ' +
     'class="ui medium center aligned inverted header">' +
     '<i class="icon lock"></i>' +
-    '<div class="content">INFORMACIÓN DE PAGO</div>' +
+    '<strong>INFORMACIÓN DE PAGO</strong><br/>' +
     "</div>" +
     '<div class="inline field">' +
-    "<label>*NIT o Cédula</label>" +
-    "<input " +
-    'class="numeric" ' +
-    'name="cedula_modal" ' +
-    'type="text" value="' +
+    "<strong>*NIT o Cédula:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.cedula +
-    '" />' +
+    "</label>" +
     "</div>" +
     '<div class="inline field">' +
-    "<label>*Concepto de Pago</label>" +
-    "<input " +
-    'name="concepto_pago_modal"' +
-    'type="text" value="' +
+    "<strong>*Concepto de Pago:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.concepto_pago +
-    '" />' +
+    "</label>" +
     "</div>" +
     '<div class="inline field">' +
-    "<label>*Pago Total</label>" +
-    "<input " +
-    'name="pago_total_modal"' +
-    'class="numeric"' +
-    'type="text" value="' +
+    "<strong>*Pago Total:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.pago_total +
-    '" />' +
+    " </label>" +
     "</div>" +
     '<div class="inline field">' +
-    "<label>*Nombre Completo</label>" +
-    '<input name="nombres_modal" placeholder="Nombres" type="text" value="' +
+    "<strong>*Nombre Completo:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.nombre +
-    '" />' +
+    " </label>" +
     "</div>" +
     '<div class="inline field">' +
-    "<label>*Dependencia</label>" +
-    "<input " +
-    'name="dependencia_modal "' +
-    'type="text" value="' +
+    "<strong>*Dependencia:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.dependecia +
-    '" />' +
+    "</label>" +
     "</div>" +
     '<div class="inline field">' +
-    '<label class="red">Télefono de Contacto</label>' +
-    "<input " +
-    'name="telefono_modal"' +
-    'class="numeric "' +
-    'type="text" value="' +
+    "<strong>Télefono de Contacto:  </strong>" +
+    "<label>" +
     SELECTED_PERSON.data.telefono +
-    '" />' +
+    " </label>" +
     "</div>" +
     "<br />" +
     '<div class="actions">' +
     "<a " +
     'id="modal-payment" ' +
     'class="ui blue right labeled icon button fluid" ' +
-    'onclick="modalPayment()" ' +
     'target=" _blank" ' +
     'href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111" ' +
-    ">Generar pago";
-  "</a>" + "</div>" + "</form>" + "</div>" + "</body></html>";
+    ">Generar pago" +
+    "</a>" +
+    "</div>" +
+    "</form>" +
+    "</div>";
 
   return modal;
 }

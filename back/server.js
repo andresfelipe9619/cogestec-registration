@@ -84,7 +84,8 @@ function registerPerson(person) {
     name: "hora_registro",
     value: new Date().toLocaleDateString()
   });
-  person.push({ name: "pago_comprobado", value: "NO" });
+  person.push({ name: "pago_comprobado", value: "-" });
+  person.push({ name: "file_doc", value: "-" });
 
   logFunctionOutput("person", person);
 
