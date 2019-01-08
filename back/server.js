@@ -85,7 +85,7 @@ function registerPerson(person) {
     value: new Date().toLocaleDateString()
   });
   person.push({ name: "pago_comprobado", value: "-" });
-  person.push({ name: "file_doc", value: "-" });
+  person.push({ name: "pay_file", value: "-" });
 
   logFunctionOutput("person", person);
 
@@ -249,8 +249,9 @@ function objectToSheetValues(object, headers) {
   return arrayValues;
 }
 
-function sheetValuesToObject(sheetValues) {
-  var headings = sheetValues[0].map(String.toLowerCase);
+function sheetValuesToObject(sheetValues, headers) {
+  var headings = headers || sheetValues[0].map(String.toLowerCase);
+  if(sheetValues)
   var people = sheetValues.slice(1);
   var peopleWithHeadings = addHeadings(people, headings);
 

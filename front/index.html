@@ -194,6 +194,18 @@
                   <div class="ui button">CANCELAR</div>
                 </div>
               </div>
+              <div class="field file-ponencia-field not-visible">
+                <label for="ponencia_file"
+                  ><strong>ARCHIVO PONENCIA</strong> <br />
+                  Por favor, cargar un ARCHIVO DE PONENCIA(formato .PDF)</label
+                >
+                <input
+                  type="file"
+                  id="ponencia_file"
+                  name="ponencia_file"
+                  accept="application/pdf "
+                />
+              </div>
             </div>
             <div class="field content">
               <div class="ui checkbox" id="politicas">
@@ -229,8 +241,9 @@
               id="register-pay-btn"
               name="register-pay-btn"
               onclick="submitPayment()"
-              >Generar pago</button
             >
+              Generar pago
+            </button>
           </form>
 
           <div class="ui bottom attached warning message">

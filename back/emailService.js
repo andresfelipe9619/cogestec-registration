@@ -20,7 +20,7 @@ function checkEditedCell(range) {
     cedula: rawPerson[2],
     nombre: rawPerson[0] + " " + rawPerson[1],
     email: rawPerson[3],
-    pago_total: rawPerson[6],
+    pago_total: Number(rawPerson[6]),
     concepto_pago: rawPerson[5],
     dependecia: "COGESTEC 2019",
     telefono: rawPerson[4]
@@ -113,7 +113,7 @@ function buildResearcherPayApprovedBody() {
     "<p>Cordial saludo " +
     SELECTED_PERSON.data.nombre +
     ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor, " +
-    "presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
+    "preséntarlo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
     "<p>Recuerda que obtendrás certificado como ponente por presentar tu ponencia en la fecha y hora asignadas y como asistente al evento, al pasar por la mesa de registro el día del evento.</p>" +
     '<p>Recuerda que siempre podrás consultar la agenda en el siguiente enlace: <a href="http://www.cogestec.co/agenda/">http://www.cogestec.co/agenda/</a></p>' +
     '<p>La información de interés para ponentes se encuentra en el siguiente enlace: <a href="http://www.cogestec.co/ponentes/">http://www.cogestec.co/ponentes/</a></p>' +
@@ -122,6 +122,7 @@ function buildResearcherPayApprovedBody() {
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
+  body = body.concat('<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' );
   return body;
 }
 
@@ -131,13 +132,13 @@ function buildAttendantPayApprovedBody() {
     "<p>Cordial saludo " +
     SELECTED_PERSON.data.nombre +
     ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
-    " en este email adjuntaremos un código QR, por favor, presentalo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
-    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' +
+    " en este email adjuntaremos un código QR, por favor, preséntarlo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
     "<br/>Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/" +
     "<p>Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.</p>";
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
+  body = body.concat('<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' );
   return body;
 }
 
@@ -193,7 +194,7 @@ function buildModal(successMsg) {
     '<div class="inline field">' +
     "<strong>*Pago Total:  </strong>" +
     "<label>" +
-    SELECTED_PERSON.data.pago_total +
+    "$"+SELECTED_PERSON.data.pago_total+"(pesos colombianos)"+
     " </label>" +
     "</div>" +
     '<div class="inline field">' +
@@ -216,13 +217,12 @@ function buildModal(successMsg) {
     "</div>" +
     "<br />" +
     '<div class="actions">' +
-    "<a " +
+    "<button " +
     'id="modal-payment" ' +
-    'class="ui blue right labeled icon button fluid" ' +
-    'target=" _blank" ' +
-    'href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111" ' +
+    'type="reset" ' +
+    'onclick="location.href=\'https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111\'"' +
     ">Generar pago" +
-    "</a>" +
+    "</button>" +
     "</div>" +
     "</form>" +
     "</div>";
