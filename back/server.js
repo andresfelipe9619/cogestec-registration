@@ -185,9 +185,7 @@ function getMainFolder() {
   }
   return mainFolder;
 }
-
-function createPersonFolder(numdoc, data) {
-  //se crea la carpeta que va contener los arhivos actuales
+function createPersonFile(name, numdoc, data){
   var result = {
     url: "",
     file: ""
@@ -202,9 +200,28 @@ function createPersonFolder(numdoc, data) {
 
   var file = currentFolder.createFile(blob);
   file.setDescription("Subido Por " + numdoc);
-  file.setName(numdoc + "_documento");
+  file.setName(numdoc + "_" + name);
   result.file = file.getName();
   return result;
+}
+
+function createPersonFolder(numdoc, data) {
+  var res = createPersonFile("DOCUMENTO", numdoc, data)
+  return res;
+}
+
+function createPaymentFile(numdoc, data) {
+  var res = createPersonFile("PAY", numdoc, data)
+  return res;
+}
+function generatePayment(index, numdoc, file){
+  var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
+  var headers = inscritosSheet.getSheetValues(1, 1, 1, inscritosSheet.getLastColumn())[0];
+  var pagoIndex = headers.indexOf('PAY_FILE')
+  var mfile = createPaymentFile(numdoc, file)
+  // logFunctionOutput(generatePayment.name, inscritosSheet.getRange(index, pagoIndex).getValues())
+  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[mfile.url]])
+  return true
 }
 
 function getSheetFromSpreadSheet(url, sheet) {

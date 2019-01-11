@@ -147,6 +147,7 @@
   }
 
   function validationpassed(e) {
+    console.log("VALIDATION PASSED");
     try {
       e.preventDefault();
       var mForm = $("#form-form");
@@ -154,19 +155,18 @@
       mForm.addClass("loading");
       if (!radioPressed) {
         formData.push({ name: "acepta_ponencia", value: "-" });
-        formData.push({ name: "ponencia_file", value: "-" });
       }
+      formData.push({ name: "ponencia_file", value: "-" });
       // if (
       //   !$(".doc-field").hasClass("not-visible") &&
       //   !$(".ponencia-fields").hasClass("not-visible")
       // ) {
       //   console.log("hi, estudent researcher");
-      // } else
-      // if (!$(".ponencia-fields").hasClass("not-visible")) {
+      // } else if (!$(".ponencia-fields").hasClass("not-visible")) {
       //   console.log("hi, researcher");
       // } else
       if (!$(".doc-field").hasClass("not-visible")) {
-        var file = $('input[type="file"]').prop("files")[0];
+        var file = $("#doc_file").prop("files")[0];
         var reader = new FileReader();
         reader.readAsDataURL(file);
 
@@ -278,6 +278,7 @@
           he_pays = "$322.000";
           concept = "Professional Researcher";
           $(".doc-field").addClass("not-visible");
+          $(".file-ponencia-field").addClass("not-visible")
           $("#form-form").form({
             inline: true,
             on: "blur",
@@ -307,6 +308,7 @@
           concept = "Student Researcher";
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
+          $(".file-ponencia-field").addClass("not-visible")
           ponenciaValidation.doc_file = studentValidation.doc_file;
           $("#form-form").form({
             inline: true,
@@ -329,9 +331,7 @@
       $("input[name='pago_total']").addClass("not-allowed");
     }
   }
-  function handleRadioChange(radio) {
-    $("#msg-change").removeClass("not-visible");
-  }
+
 
   function searchForPerson() {
     hideForm();
@@ -374,8 +374,8 @@
 
   function disableFormFielfds(bool) {
     if (bool) {
-      $("input:not([name='busca-cedula'])").prop("readonly", true);
-      $("input:not([name='busca-cedula'])").addClass("not-allowed");
+      $("input:not([name='busca-cedula'], [type='radio'])").prop("readonly", true);
+      $("input:not([name='busca-cedula'], [type='radio'])").addClass("not-allowed");
     } else {
       $("input:not([name='busca-cedula'])").prop("readonly", false);
       $("input:not([name='busca-cedula'])").removeClass("not-allowed");
@@ -448,12 +448,16 @@
     // $(".ui.radio").checkbox();
 
     if (person.data["acepta_ponencia"] == "SI") {
+      $("#ponencia_si").prop('checked', true)
       // $("input[id='ponencia_si']").checkbox("check");
     } else if (person.data["acepta_ponencia"] == "NO") {
+      $("#ponencia_no").prop('checked', true)
+
       // $("input[id='ponencia_no']").checkbox("check");
     } else {
       $("#ponencia_fields").addClass("not-visible");
     }
+    $(".file-ponencia-field").addClass("not-visible");
   }
 
   function showPaymentApproved(person) {
@@ -510,10 +514,37 @@
   function submitPayment() {
     // $("#form-form").form('validate form')
     if ($("#form-form").form("validate field", "pay_file")) {
-      if (currentPerson) {
-        $("#register-pay-btn").addClass("loading");
-        $("#register-pay-btn").removeClass("loading");
-        showPersonInModal(currentPerson);
+      $("#form-form").addClass("loading");
+      if (personIndex) {
+        var file = $("#pay_file").prop("files")[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onloadend = function(e) {
+          function onSuccess(result) {
+            if (result) {
+              if (currentPerson) {
+                $("#form-form").removeClass("loading");
+
+                $("#register-pay-btn").addClass("loading");
+                $("#register-pay-btn").removeClass("loading");
+                showSuccesPayModal()
+              }
+            } else {
+              $("#form-form").removeClass("loading");
+            }
+          }
+
+          google.script.run
+            .withSuccessHandler(onSuccess)
+            .generatePayment(
+              personIndex,
+              $("input[name='cedula']").val(),
+              e.target.result
+            );
+        };
+      } else {
+        $("#form-form").removeClass("loading");
       }
     }
   }
@@ -577,7 +608,16 @@
       `Su solicitud para aplicar el descuento será estudiada y tendrá respuesta en un plazo máximo de tres días habiles vía correo electrónico, para que pueda proceder al pago de su inscripcion.`
     );
   }
-
+  function showSuccesPayModal() {
+    $("#form-form").removeClass("loading");
+    $("#result-msg").text("");
+    $(".ui.modal").modal("show");
+    $("#modal-form").addClass("not-visible");
+    $(".actions").css("display", "block");
+    $("#result-msg").text(
+      `Su soporte de pago ha sido enviado`
+    );
+  }
   function formValidation() {
     $.fn.form.settings.rules.pay = function(value) {
       if ($(".support-field").hasClass("not-visible") || value.length > 0) {
@@ -591,8 +631,11 @@
       }
       return false;
     };
-    $.fn.form.settings.rules.ponencia_file  = function(value) {
-      if ($("#ponencia_fields").hasClass("not-visible") || value.length > 0) {
+    $.fn.form.settings.rules.ponencia_file = function(value) {
+      if (
+        $(".file-ponencia-field").hasClass("not-visible") ||
+        value.length > 0
+      ) {
         return true;
       }
       return false;

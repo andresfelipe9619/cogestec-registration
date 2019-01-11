@@ -20,7 +20,7 @@ function checkEditedCell(range) {
     cedula: rawPerson[2],
     nombre: rawPerson[0] + " " + rawPerson[1],
     email: rawPerson[3],
-    pago_total: Number(rawPerson[6]),
+    pago_total: rawPerson[6],
     concepto_pago: rawPerson[5],
     dependecia: "COGESTEC 2019",
     telefono: rawPerson[4]
@@ -145,7 +145,7 @@ function buildAttendantPayApprovedBody() {
 function buildDocDisapprovedBody() {
   var body = "";
   var successMsg =
-    "<p>Cordial saludo" +
+    "<p>Cordial saludo " +
     SELECTED_PERSON.data.nombre +
     ", lamentamos informar que tu solicitud de descuento ha sido denegada puesto que," +
     "la información adjunta es insuficiente para comprobar tu estado actual como estudiante de pregrado activo.</p>" +
