@@ -5,22 +5,117 @@
   var currentPerson = null;
   var requestPayload = null;
   var radioPressed = undefined;
-
+  var formValidationFields = {
+    nombres: {
+      identifier: "nombres",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un nombre"
+        }
+      ]
+    },
+    apellidos: {
+      identifier: "apellidos",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un apellido"
+        }
+      ]
+    },
+    dependencia: {
+      identifier: "dependencia",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un nombre"
+        }
+      ]
+    },
+    cedula: {
+      identifier: "cedula",
+      rules: [
+        {
+          type: "number",
+          prompt: "Por favor ingrese una cedula valido"
+        },
+        {
+          type: "empty",
+          prompt: "Por favor ingrese una cedula"
+        }
+      ]
+    },
+    telefono: {
+      identifier: "telefono",
+      rules: [
+        {
+          type: "number",
+          prompt: "Por favor ingrese un numero valido"
+        },
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un numero"
+        }
+      ]
+    },
+    concepto_pago: {
+      identifier: "concepto_pago",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un numero"
+        }
+      ]
+    },
+    pago_total: {
+      identifier: "pago_total",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un numero valido"
+        },
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un numero"
+        }
+      ]
+    },
+    politicas: {
+      identifier: "politicas",
+      rules: [
+        {
+          type: "checked",
+          prompt: "Por favor acepte nuestras politicas para inscribirse"
+        }
+      ]
+    },
+    email: {
+      identifier: "correo",
+      rules: [
+        {
+          type: "mEmail",
+          prompt: "Por favor ingrese a correo valido"
+        },
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un correo"
+        }
+      ]
+    }
+  };
   function init_js() {
     $(".submit.button").click(function() {
       buttonpressed = $(this).attr("name");
     });
 
-    // $(".ui.radio.checkbox").checkbox();
-    // $(".ui.radio.checkbox").checkbox({
-    //   onChecked: function() {
-    //     radioPressed = $(this).attr("value");
-    //     console.log("radio", radioPressed);
-    //     if (currentPerson) {
-    //       handleRadioChange(radioPressed);
-    //     }
-    //   }
-    // });
+    $(".ui.radio.checkbox").checkbox();
+    $(".ui.radio.checkbox").checkbox({
+      onChecked: function() {
+        radioPressed = $(this).attr("value");
+        console.log("pressed", radioPressed);
+      }
+    });
     formValidation();
 
     $(".ui.modal").modal();
@@ -59,9 +154,18 @@
       mForm.addClass("loading");
       if (!radioPressed) {
         formData.push({ name: "acepta_ponencia", value: "-" });
+        formData.push({ name: "ponencia_file", value: "-" });
       }
-
-      if (!$(".file-field").hasClass("not-visible")) {
+      // if (
+      //   !$(".doc-field").hasClass("not-visible") &&
+      //   !$(".ponencia-fields").hasClass("not-visible")
+      // ) {
+      //   console.log("hi, estudent researcher");
+      // } else
+      // if (!$(".ponencia-fields").hasClass("not-visible")) {
+      //   console.log("hi, researcher");
+      // } else
+      if (!$(".doc-field").hasClass("not-visible")) {
         var file = $('input[type="file"]').prop("files")[0];
         var reader = new FileReader();
         reader.readAsDataURL(file);
@@ -82,7 +186,7 @@
             );
         };
       } else {
-        formData.push({ name: "doc_file", value: "Professional" });
+        formData.push({ name: "doc_file", value: "-" });
         addPayment(formData);
       }
     } catch (error) {
@@ -125,34 +229,92 @@
   function setAttendantPayment(attendant) {
     var he_pays = 0;
     var concept = "";
+    var studentValidation = Object.assign({}, formValidationFields);
+    studentValidation.doc_file = {
+      identifier: "doc_file",
+      rules: [
+        {
+          type: "file",
+          prompt: "Por favor ingrese un archivo"
+        }
+      ]
+    };
+    var ponenciaValidation = Object.assign({}, formValidationFields);
+    ponenciaValidation.acepta_ponencia = {
+      identifier: "acepta_ponencia",
+      rules: [
+        {
+          type: "checked",
+          prompt: "Por favor seleccione una de las dos"
+        }
+      ]
+    };
+    ponenciaValidation.ponencia_file = {
+      identifier: "ponencia_file",
+      rules: [
+        {
+          type: "ponencia_file",
+          prompt: "Por favor ingrese un archivo"
+        }
+      ]
+    };
     if (attendant) {
       switch (attendant) {
         case "professional":
-          he_pays = "437.000";
+          he_pays = "$437.000";
           concept = "Professional Attendant";
-          $(".file-field").addClass("not-visible");
+          $(".doc-field").addClass("not-visible");
           $("#ponencia_fields").addClass("not-visible");
+          $("#form-form").form({
+            inline: true,
+            on: "blur",
+            transition: "fade down",
+            onSuccess: validationpassed,
+            fields: formValidationFields
+          });
           break;
 
         case "professional_r":
-          he_pays = "322.000";
+          he_pays = "$322.000";
           concept = "Professional Researcher";
-          $(".file-field").addClass("not-visible");
+          $(".doc-field").addClass("not-visible");
+          $("#form-form").form({
+            inline: true,
+            on: "blur",
+            transition: "fade down",
+            onSuccess: validationpassed,
+            fields: ponenciaValidation
+          });
           break;
 
         case "student":
-          he_pays = "287.500";
+          he_pays = "$287.500";
           concept = "Student";
           $("#ponencia_fields").addClass("not-visible");
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
+          $("#form-form").form({
+            inline: true,
+            on: "blur",
+            transition: "fade down",
+            onSuccess: validationpassed,
+            fields: studentValidation
+          });
           break;
 
         case "student_r":
-          he_pays = "230.000";
+          he_pays = "$230.000";
           concept = "Student Researcher";
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
+          ponenciaValidation.doc_file = studentValidation.doc_file;
+          $("#form-form").form({
+            inline: true,
+            on: "blur",
+            transition: "fade down",
+            onSuccess: validationpassed,
+            fields: ponenciaValidation
+          });
           break;
 
         default:
@@ -184,6 +346,7 @@
         $("#btn-search").removeClass("loading");
         $("input[name='cedula']").prop("readonly", true);
         $("input[name='cedula']").addClass("not-allowed");
+
         if (person.isRegistered) {
           showPersonInForm(person);
         } else {
@@ -239,14 +402,29 @@
 
   function showPersonInForm(person) {
     loadPersonInForm(person);
+    // $("#form-form").form("remove field", "politicas");
 
     if (person.data["pago_comprobado"] == "SI") {
       showPaymentApproved();
     } else {
       showPaymentDisapproved(person);
+      $(".support-field").removeClass("not-visible");
+      $("#form-form").form({
+        fields: {
+          pay_file: {
+            identifier: "pay_file",
+            rules: [
+              {
+                type: "pay",
+                prompt: "Por favor ingrese un archivo"
+              }
+            ]
+          }
+        }
+      });
     }
 
-    $(".file-field").addClass("not-visible");
+    $(".doc-field").addClass("not-visible");
     $("#politicas").addClass("not-visible");
     $("#submit-btn").addClass("not-visible");
     $("#submit-pay-btn").addClass("not-visible");
@@ -269,13 +447,13 @@
     $("input[name='pago_total']").val(person.data.pago_total);
     // $(".ui.radio").checkbox();
 
-    // if (person.data["acepta_ponencia"] == "SI") {
-    //   $("input[id='ponencia_si']").checkbox("check");
-    // } else if (person.data["acepta_ponencia"] == "NO") {
-    //   $("input[id='ponencia_no']").checkbox("check");
-    // } else {
-    //   $("#ponencia_fields").addClass("not-visible");
-    // }
+    if (person.data["acepta_ponencia"] == "SI") {
+      // $("input[id='ponencia_si']").checkbox("check");
+    } else if (person.data["acepta_ponencia"] == "NO") {
+      // $("input[id='ponencia_no']").checkbox("check");
+    } else {
+      $("#ponencia_fields").addClass("not-visible");
+    }
   }
 
   function showPaymentApproved(person) {
@@ -283,8 +461,8 @@
     $("#pay-msg").removeClass("warning");
     $("#pay-msg").addClass("success");
     $("#pay-msg").html(`<i class="icon check circle"></i>
-                El pago de su inscripción registrado satisfactoriamente.
-              </div>`);
+                  El pago de su inscripción registrado satisfactoriamente.
+                </div>`);
   }
 
   function showPaymentDisapproved(person) {
@@ -292,11 +470,10 @@
     $("#pay-msg").removeClass("success");
     $("#pay-msg").addClass("warning");
     $("#pay-msg").html(`<i class="icon warning "></i>
-                El pago de su inscripción aun no ha sido registrado.
-                Usted ha sido registrado como ${person.data.concepto_pago}
-              </div>`);
+                  El pago de su inscripción aun no ha sido registrado.
+                  Usted ha sido registrado como ${person.data.concepto_pago}
+                </div>`);
     $("#register-pay-btn").removeClass("not-visible");
-    $("#register-pay-btn").addClass("visible");
   }
 
   function modalPayment() {
@@ -331,11 +508,13 @@
   }
 
   function submitPayment() {
-    $("#register-pay-btn").addClass("loading");
-
-    if (currentPerson) {
-      $("#register-pay-btn").removeClass("loading");
-      showPersonInModal(currentPerson);
+    // $("#form-form").form('validate form')
+    if ($("#form-form").form("validate field", "pay_file")) {
+      if (currentPerson) {
+        $("#register-pay-btn").addClass("loading");
+        $("#register-pay-btn").removeClass("loading");
+        showPersonInModal(currentPerson);
+      }
     }
   }
 
@@ -349,15 +528,16 @@
   function hideForm() {
     $("#mainForm").css("display", "none");
     $(".fields.regreso").removeClass("not-allowed");
-    $(".file-field").removeClass("not-visible");
-    $(".pay-field").removeClass("not-visible");
+    $(".doc-field").removeClass("not-visible");
+    // $(".support-field").removeClass("not-visible");
     $("#submit-btn").removeClass("not-visible");
     $("#submit-pay-btn").removeClass("not-visible");
-
     $(".fields.regreso").removeClass("not-allowed");
     $("#pay-msg").addClass("not-visible");
     $("#pay-msg").text("");
-
+    $("#register-pay-btn").addClass("not-visible");
+    $("#free-btn").addClass("not-visible");
+    $(".support-field").addClass("not-visible");
     disableFormFielfds(false);
     $("#form-form").form("clear");
   }
@@ -370,8 +550,8 @@
     $("#modal-form").removeClass("not-visible");
 
     $("#result-msg").text(`
-    Por favor, copie la información que mostramos a continuación 
-    en el formulario de pago de inscripción (Botón azul).`);
+      Por favor, copie la información que mostramos a continuación
+      en el formulario de pago de inscripción (Botón azul).`);
 
     $("input[name$='_modal']").prop("readonly", true);
     // $("input[name$='_modal']").addClass("not-allowed");
@@ -399,14 +579,20 @@
   }
 
   function formValidation() {
-    $.fn.form.settings.rules.file = function(value) {
-      if ($(this).hasClass("not-visible") || value.length > 0) {
+    $.fn.form.settings.rules.pay = function(value) {
+      if ($(".support-field").hasClass("not-visible") || value.length > 0) {
         return true;
       }
       return false;
     };
     $.fn.form.settings.rules.file = function(value) {
-      if ($(".file-field").hasClass("not-visible") || value.length > 0) {
+      if ($(".doc-field").hasClass("not-visible") || value.length > 0) {
+        return true;
+      }
+      return false;
+    };
+    $.fn.form.settings.rules.ponencia_file  = function(value) {
+      if ($("#ponencia_fields").hasClass("not-visible") || value.length > 0) {
         return true;
       }
       return false;
@@ -420,152 +606,21 @@
       return false;
     };
     $.fn.form.settings.rules.ponencia = function(value) {
-      console.log("value ponencia", value);
       if ($("#ponencia_fields").hasClass("not-visible") || radioPressed) {
+        console.log("value ponencia true", value);
         return true;
       }
+      console.log("value ponencia false", value);
+
       return false;
     };
+
     $("#form-form").form({
       inline: true,
       on: "blur",
       transition: "fade down",
       onSuccess: validationpassed,
-      fields: {
-        nombres: {
-          identifier: "nombres",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un nombre"
-            }
-          ]
-        },
-        apellidos: {
-          identifier: "apellidos",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un apellido"
-            }
-          ]
-        },
-        dependencia: {
-          identifier: "dependencia",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un nombre"
-            }
-          ]
-        },
-        cedula: {
-          identifier: "cedula",
-          rules: [
-            {
-              type: "number",
-              prompt: "Por favor ingrese una cedula valido"
-            },
-            {
-              type: "empty",
-              prompt: "Por favor ingrese una cedula"
-            }
-          ]
-        },
-        telefono: {
-          identifier: "telefono",
-          rules: [
-            {
-              type: "number",
-              prompt: "Por favor ingrese un numero valido"
-            },
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un numero"
-            }
-          ]
-        },
-        concepto_pago: {
-          identifier: "concepto_pago",
-          rules: [
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un numero"
-            }
-          ]
-        },
-        pago_total: {
-          identifier: "pago_total",
-          rules: [
-            {
-              type: "number",
-              prompt: "Por favor ingrese un numero valido"
-            },
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un numero"
-            }
-          ]
-        },
-        acepta_ponencia: {
-          identifier: "acepta_ponencia",
-          rules: [
-            {
-              type: "ponencia",
-              prompt: "Por favor seleccione una de las dos opciones"
-            }
-          ]
-        },
-        politicas: {
-          identifier: "politicas",
-          rules: [
-            {
-              type: "checked",
-              prompt: "Por favor acepte nuestras politicas para inscribirse"
-            }
-          ]
-        },
-        email: {
-          identifier: "correo",
-          rules: [
-            {
-              type: "mEmail",
-              prompt: "Por favor ingrese a correo valido"
-            },
-            {
-              type: "empty",
-              prompt: "Por favor ingrese un correo"
-            }
-          ]
-        },
-        doc_file: {
-          identifier: "doc_file",
-          rules: [
-            {
-              type: "file",
-              prompt: "Por favor ingrese un archivo"
-            }
-          ]
-        },
-        ponencia_file: {
-          identifier: "ponencia_file",
-          rules: [
-            {
-              type: "file",
-              prompt: "Por favor ingrese un archivo"
-            }
-          ]
-        },
-        pay_file: {
-          identifier: "pay_file",
-          rules: [
-            {
-              type: "file",
-              prompt: "Por favor ingrese un archivo"
-            }
-          ]
-        }
-      }
+      fields: formValidationFields
     });
   }
 </script>

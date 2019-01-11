@@ -128,7 +128,7 @@
                 />
               </div>
             </div>
-            <div class="field file-field">
+            <div class="field doc-field">
               <label for="doc_file"
                 ><strong>DOCUMENTO DE VALIDACIÓN</strong> <br />
                 Por favor, cargar un CERTIFICADO DE ESTUDIO que le acredite como
@@ -144,8 +144,7 @@
             <div class="field support-field not-visible">
               <label for="pay_file"
                 ><strong>SOPORTE DE PAGO</strong> <br />
-                Por favor, cargar un SOPORTE DE PAGO que le acredite como
-                estudiante pregrado activo (formato .PDF)</label
+                Por favor, cargar un SOPORTE DE PAGO (formato .PDF)</label
               >
               <input
                 type="file"
@@ -160,7 +159,7 @@
                 en las memorias del Congreso (con ISBN)</label
               >
               <div class="field">
-                <div>
+                <div class="ui radio checkbox">
                   <input
                     id="ponencia_no"
                     name="acepta_ponencia"
@@ -173,7 +172,7 @@
                 </div>
               </div>
               <div class="field">
-                <div>
+                <div class="ui radio checkbox">
                   <input
                     id="ponencia_si"
                     name="acepta_ponencia"
@@ -194,7 +193,7 @@
                   <div class="ui button">CANCELAR</div>
                 </div>
               </div>
-              <div class="field file-ponencia-field not-visible">
+              <div class="field file-ponencia-field">
                 <label for="ponencia_file"
                   ><strong>ARCHIVO PONENCIA</strong> <br />
                   Por favor, cargar un ARCHIVO DE PONENCIA(formato .PDF)</label
@@ -236,15 +235,16 @@
             >
               Solicitar descuento
             </div>
-            <button
-              class="ui blue not-visible button"
-              id="register-pay-btn"
-              name="register-pay-btn"
-              onclick="submitPayment()"
-            >
-              Generar pago
-            </button>
           </form>
+          <button
+            style="margin: 5px 5px"
+            class="ui blue not-visible button"
+            id="register-pay-btn"
+            name="register-pay-btn"
+            onclick="submitPayment()"
+          >
+            Generar pago
+          </button>
 
           <div class="ui bottom attached warning message">
             <i class="icon help"></i> Si presenta alguna dificultad en el

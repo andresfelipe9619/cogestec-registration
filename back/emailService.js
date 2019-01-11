@@ -27,7 +27,7 @@ function checkEditedCell(range) {
   };
   if (range.getColumn() == 8) {
     handleOnPaymentChange(range);
-  } else if (range.getColumn() == 10) {
+  } else if (range.getColumn() == 12) {
     handleOnDocumentChange(range);
   }
 }
@@ -194,7 +194,7 @@ function buildModal(successMsg) {
     '<div class="inline field">' +
     "<strong>*Pago Total:  </strong>" +
     "<label>" +
-    "$"+SELECTED_PERSON.data.pago_total+"(pesos colombianos)"+
+    SELECTED_PERSON.data.pago_total+"(pesos colombianos)"+
     " </label>" +
     "</div>" +
     '<div class="inline field">' +
