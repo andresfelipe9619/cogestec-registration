@@ -113,7 +113,9 @@
     $(".ui.radio.checkbox").checkbox({
       onChecked: function() {
         radioPressed = $(this).attr("value");
-        console.log("pressed", radioPressed);
+        if (personIndex > -1 && currentPerson) {
+          $("#ponencia-change-msg").removeClass("not-visible");
+        }
       }
     });
     formValidation();
@@ -147,7 +149,7 @@
   }
 
   function validationpassed(e) {
-    console.log("VALIDATION PASSED");
+    // console.log("VALIDATION PASSED");
     try {
       e.preventDefault();
       var mForm = $("#form-form");
@@ -163,7 +165,6 @@
         !$(".doc-field").hasClass("not-visible") &&
         !$("#ponencia_fields").hasClass("not-visible")
       ) {
-
         var file_ponencia = $("#ponencia_file").prop("files")[0];
         var reader_ponencia = new FileReader();
         var file_doc = $("#doc_file").prop("files")[0];
@@ -171,9 +172,7 @@
 
         reader_ponencia.readAsDataURL(file_ponencia);
         reader_ponencia.onloadend = function(e) {
-
           function onSuccessPonencia(result) {
-
             if (result) {
               formData.push({ name: "ponencia_file", value: result.url });
               reader_doc.readAsDataURL(file_doc);
@@ -189,7 +188,6 @@
 
         reader_doc.onloadend = function(e) {
           function onSuccessDoc(result) {
-
             if (result) {
               formData.push({ name: "doc_file", value: result.url });
               addPayment(formData);
@@ -259,16 +257,16 @@
 
   function addPayment(formData) {
     formData.push({ name: "documento_verificado", value: "-" });
-    console.log("form", formData);
+    // console.log("form", formData);
     registerPersonInSheet(formData);
   }
 
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
-      // console.log("register response", response);
+      // // console.log("register response", response);
 
       if (response.ok) {
-        console.log(buttonpressed);
+        // console.log(buttonpressed);
         if (String(buttonpressed).includes("submit-btn")) {
           showPersonInModal(response.data);
         } else {
@@ -278,7 +276,7 @@
         console.log("You fucked up", response);
       }
     }
-    // console.log(formData);
+    // // console.log(formData);
     google.script.run.withSuccessHandler(onSuccess).registerPerson(formData);
   }
 
@@ -408,24 +406,24 @@
       $("#step-msg").html("");
       $("#step-msg").html(`
       <ol>
-        <li>Registra los datos completos en este formulario de inscripción.</li>
-<li>Carga el certificado de estudios que te avala como estudiante activo de pregrado.</li>
-<li>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</li>
-<li>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</li>
-<li>Realiza el pago requerido, utilizando los formularios correspondientes.</li>
-<li>Descarga la confirmación del pago.</li>
-<li>Carga el comprobante de pagos en el formulario de inscripción.</li>
-<li>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</li>
+        <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
+<li><span>Carga el certificado de estudios que te avala como estudiante activo de pregrado.</span></li>
+<li><span>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</span></li>
+<li><span>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</span></li>
+<li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
+<li><span>Descarga la confirmación del pago.</span></li>
+<li><span>Carga el comprobante de pagos en el formulario de inscripción.</span></li>
+<li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
       </ol>`);
     } else {
       $("#step-msg").html("");
       $("#step-msg").html(`<ol>
-      <li>Registra los datos completos en este formulario de inscripción.</li>
-<li>Haga clic en el formulario de pago y copie los datos correspondientes.</li>
-<li>Realiza el pago requerido, utilizando los formularios correspondientes.</li>
-<li>Descarga la confirmación del pago.</li>
-<li>Carga el comprobante de pagos en el formulario de inscripción.</li>
-<li>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</li>
+      <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
+<li><span>Haga clic en el formulario de pago y copie los datos correspondientes.</span></li>
+<li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
+<li><span>Descarga la confirmación del pago.</span></li>
+<li><span>Carga el comprobante de pagos en el formulario de inscripción.</span></li>
+<li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
       </ol>`);
     }
   }
@@ -439,7 +437,7 @@
       if (person) {
         showForm();
         $("#form-form").addClass("loading");
-        console.log("A nice formatted person", person);
+        // console.log("A nice formatted person", person);
         $("#btn-search").removeClass("loading");
         $("input[name='cedula']").prop("readonly", true);
         $("input[name='cedula']").addClass("not-allowed");
@@ -504,27 +502,35 @@
 
   function showPersonInForm(person) {
     loadPersonInForm(person);
-    // $("#form-form").form("remove field", "politicas");
-    $(".support-ready-field").html("");
+    $(".ponencia-ready-field").html("");
     if (person.data.ponencia_file.length > 3) {
-        $(".support-ready-field").removeClass("not-visible");
-        $(".support-ready-field").html(`
+      $(".ponencia-ready-field").removeClass("not-visible");
+      $(".ponencia-ready-field").html(`
         <h2><a target="_blank" href="${
           person.data.ponencia_file
         }">Archivo Ponencia</a></h2>
         `);
-      }
-    if (person.data["pago_comprobado"] == "SI") {
+    }
+    if (
+      person.data["pago_comprobado"] == "SI" &&
+      person.data.pay_file.length > 3
+    ) {
+      //muestra pago comprobado y si tiene archivo lo muestra
       showPaymentApproved();
-      if (person.data.pay_file.length > 3) {
-        $(".support-ready-field").removeClass("not-visible");
-        $(".support-ready-field").html(`
+
+      $("#register-pay-btn").addClass("not-visible");
+      $(".support-ready-field").removeClass("not-visible");
+      $(".support-ready-field").html(`
         <h2><a target="_blank" href="${
           person.data.pay_file
         }">Soporte Pago</a></h2>
         `);
-      }
     } else {
+      //deoronto el pago es aprobado antes que lo suban
+      if (person.data["pago_comprobado"] == "SI") {
+        showPaymentApproved();
+      }
+      //no se a comprobado pago, se pide archivo
       showPaymentDisapproved(person);
       if (person.data.pay_file.length > 3) {
         $(".support-ready-field").removeClass("not-visible");
@@ -560,8 +566,34 @@
     $("#form-form").removeClass("loading");
   }
 
+  function totallySure() {
+    $("input[name=acepta_ponencia]").attr("disabled", true);
+
+    $("#ponencia-change-msg").addClass("not-visible");
+    function onSuccess() {
+      $("#ponencia-change-msg").html("");
+      $("#ponencia-change-msg").html("Ponencia actualizada correctamente");
+      setTimeout(function() {
+        $("#ponencia-change-msg").addClass("not-visible");
+      }, 1500);
+    }
+
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .changePonencia(personIndex, radioPressed + "*");
+  }
+
+  function maybeLater() {
+    if (radioPressed === "NO") {
+      $("#ponencia_si").prop("checked", true);
+    } else if (radioPressed === "SI") {
+      $("#ponencia_si").prop("checked", true);
+    }
+    $("#ponencia-change-msg").addClass("not-visible");
+  }
+
   function loadPersonInForm(person) {
-    console.log("Person in form", person);
+    // console.log("Person in form", person);
     personIndex = Number(person.index) + 1;
     currentPerson = person.data;
     $("input[name='nombres']").val(person.data.nombres);
@@ -578,10 +610,12 @@
     }
     $("input[name='pago_total']").val(person.data.pago_total);
     // $(".ui.radio").checkbox();
-
-    if (person.data["acepta_ponencia"] == "SI") {
+    if (person.data["acepta_ponencia"].includes("*")) {
+      $("input[name=acepta_ponencia]").attr("disabled", true);
+    }
+    if (person.data["acepta_ponencia"].includes("SI")) {
       $("#ponencia_si").prop("checked", true);
-    } else if (person.data["acepta_ponencia"] == "NO") {
+    } else if (person.data["acepta_ponencia"].includes("NO")) {
       $("#ponencia_no").prop("checked", true);
     } else {
       $("#ponencia_fields").addClass("not-visible");
@@ -594,7 +628,7 @@
     $("#pay-msg").removeClass("warning");
     $("#pay-msg").addClass("success");
     $("#pay-msg").html(`<i class="icon check circle"></i>
-                  El pago de su inscripción registrado satisfactoriamente.
+                  El pago de su inscripción fue registrado satisfactoriamente.
                 </div>`);
   }
 
@@ -603,7 +637,7 @@
     $("#pay-msg").removeClass("success");
     $("#pay-msg").addClass("warning");
     $("#pay-msg").html(`<i class="icon warning "></i>
-                  El pago de su inscripción aun no ha sido registrado.
+                  El pago de su inscripción aun no ha sido comprobado.
                   Usted ha sido registrado como ${person.data.concepto_pago}
                 </div>`);
     $("#register-pay-btn").removeClass("not-visible");
@@ -616,7 +650,7 @@
           personIndex = Number(person.index) + 1;
           if (personIndex > -1) {
             function fullSuccess(result) {
-              console.log("result", result);
+              // console.log("result", result);
               $("#modal-payment").removeClass("loading");
               // $(".ui.modal").modal("hide");
               hideForm();
@@ -777,11 +811,8 @@
     };
     $.fn.form.settings.rules.ponencia = function(value) {
       if ($("#ponencia_fields").hasClass("not-visible") || radioPressed) {
-        console.log("value ponencia true", value);
         return true;
       }
-      console.log("value ponencia false", value);
-
       return false;
     };
 

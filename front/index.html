@@ -60,7 +60,7 @@
         <div id="mainForm" class="twelve wide center column">
           <div id="pay-msg" class="ui success message not-visible"></div>
           <form class="ui form attached fluid segment" id="form-form">
-            <div class="ui error message"><i class="close icon"></i></div>
+            <!-- <div class="ui error message"><i class="close icon"></i></div> -->
 
             <h4 class="ui dividing header">Información General</h4>
             <div class="field">
@@ -186,31 +186,40 @@
                     <label>SI</label>
                   </div>
                 </div>
-                <div id="msg-change" class="ui info message not-visible">
-                  <div class="header">
+
+                <div class="field file-ponencia-field">
+                  <label for="ponencia_file"
+                    ><strong>ARCHIVO PONENCIA</strong> <br />
+                    Por favor, cargar un ARCHIVO DE PONENCIA(formato
+                    .PDF)</label
+                  >
+                  <input
+                    type="file"
+                    id="ponencia_file"
+                    name="ponencia_file"
+                    accept="application/pdf "
+                  />
+                </div>
+                <div
+                  id="ponencia-change-msg"
+                  class="ui message not-visible"
+                >
+                  <div class="content">
                     ¿Está seguro que quieres cambiar el estado de sus ponencias?
+                    <hr>
+                    Esta accion es irreversible, tiene plazo hasta el 10 de
+                    marzo, si desea, para cambiar de opinión.
                   </div>
                   <div class="inline">
-                    <div class="ui primary button">ACEPTAR</div>
-                    <div class="ui button">CANCELAR</div>
+                    <div class="ui primary button" onclick="totallySure()">Totalmente seguro</div>  
+                    <div class="ui button" onclick="maybeLater()">Tal vez luego</div>
                   </div>
                 </div>
               </div>
 
-              <div class="field file-ponencia-field">
-                <label for="ponencia_file"
-                  ><strong>ARCHIVO PONENCIA</strong> <br />
-                  Por favor, cargar un ARCHIVO DE PONENCIA(formato .PDF)</label
-                >
-                <input
-                  type="file"
-                  id="ponencia_file"
-                  name="ponencia_file"
-                  accept="application/pdf "
-                />
-              </div>
+              <div class="field ponencia-ready-field not-visible"></div>
             </div>
-            <br>
+            <br />
             <div class="field content">
               <div class="ui checkbox" id="politicas">
                 <input name="politicas" type="checkbox" />
@@ -259,7 +268,7 @@
           <div class="ui message">
             <i class="compass outline"></i>
             <h2>Instrucciones:</h2>
-            <hr>
+            <hr />
             <h3>
               Para tener un proceso de registro eficiente, te invitamos a seguir
               el siguiente diagrama

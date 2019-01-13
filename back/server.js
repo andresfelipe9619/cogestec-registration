@@ -128,6 +128,7 @@ function changePonencia(index, value) {
   return true;
 }
 
+
 function validatePerson(cedula) {
   var inscritos = getPeopleRegistered();
   var result = {
