@@ -192,7 +192,6 @@ function createPersonFile(name, numdoc, data){
   };
   var mainFolder = getMainFolder();
   var currentFolder = getPersonFolder(numdoc, mainFolder);
-  result.url = currentFolder.getUrl();
 
   var contentType = data.substring(5, data.indexOf(";")),
     bytes = Utilities.base64Decode(data.substr(data.indexOf("base64,") + 7)),
@@ -201,6 +200,7 @@ function createPersonFile(name, numdoc, data){
   var file = currentFolder.createFile(blob);
   file.setDescription("Subido Por " + numdoc);
   file.setName(numdoc + "_" + name);
+  result.url = file.getUrl();
   result.file = file.getName();
   return result;
 }
@@ -222,6 +222,11 @@ function generatePayment(index, numdoc, file){
   // logFunctionOutput(generatePayment.name, inscritosSheet.getRange(index, pagoIndex).getValues())
   inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[mfile.url]])
   return true
+}
+
+function createPonenciaFile(numdoc, data){
+  var res = createPersonFile("PONENCIA", numdoc, data)
+  return res;
 }
 
 function getSheetFromSpreadSheet(url, sheet) {

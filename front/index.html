@@ -153,46 +153,50 @@
                 accept="application/pdf "
               />
             </div>
-            <div id="ponencia_fields" class="inline fields">
-              <label
-                >En caso de ser aceptada la ponencia, autorizo que sea publicada
-                en las memorias del Congreso (con ISBN)</label
-              >
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    id="ponencia_no"
-                    name="acepta_ponencia"
-                    type="radio"
-                    value="NO"
-                    tabindex="0"
-                    class="hidden"
-                  />
-                  <label>NO</label>
+            <div class="field support-ready-field not-visible"></div>
+            <div id="ponencia_fields">
+              <div class="inline fields">
+                <label
+                  >En caso de ser aceptada la ponencia, autorizo que sea
+                  publicada en las memorias del Congreso (con ISBN)</label
+                >
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      id="ponencia_no"
+                      name="acepta_ponencia"
+                      type="radio"
+                      value="NO"
+                      tabindex="0"
+                      class="hidden"
+                    />
+                    <label>NO</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox">
+                    <input
+                      id="ponencia_si"
+                      name="acepta_ponencia"
+                      type="radio"
+                      value="SI"
+                      tabindex="0"
+                      class="hidden"
+                    />
+                    <label>SI</label>
+                  </div>
+                </div>
+                <div id="msg-change" class="ui info message not-visible">
+                  <div class="header">
+                    ¿Está seguro que quieres cambiar el estado de sus ponencias?
+                  </div>
+                  <div class="inline">
+                    <div class="ui primary button">ACEPTAR</div>
+                    <div class="ui button">CANCELAR</div>
+                  </div>
                 </div>
               </div>
-              <div class="field">
-                <div class="ui radio checkbox">
-                  <input
-                    id="ponencia_si"
-                    name="acepta_ponencia"
-                    type="radio"
-                    value="SI"
-                    tabindex="0"
-                    class="hidden"
-                  />
-                  <label>SI</label>
-                </div>
-              </div>
-              <div id="msg-change" class="ui info message not-visible">
-                <div class="header">
-                  ¿Está seguro que quieres cambiar el estado de sus ponencias?
-                </div>
-                <div class="inline">
-                  <div class="ui primary button">ACEPTAR</div>
-                  <div class="ui button">CANCELAR</div>
-                </div>
-              </div>
+
               <div class="field file-ponencia-field">
                 <label for="ponencia_file"
                   ><strong>ARCHIVO PONENCIA</strong> <br />
@@ -206,6 +210,7 @@
                 />
               </div>
             </div>
+            <br>
             <div class="field content">
               <div class="ui checkbox" id="politicas">
                 <input name="politicas" type="checkbox" />
@@ -243,7 +248,7 @@
             name="register-pay-btn"
             onclick="submitPayment()"
           >
-            Generar pago
+            Cargar soporte
           </button>
 
           <div class="ui bottom attached warning message">
@@ -253,12 +258,13 @@
           </div>
           <div class="ui message">
             <i class="compass outline"></i>
-            <h3>Serie de Pasos</h3>
-            <br />
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam
-            similique in alias odio veniam ex, consequuntur voluptatum, nostrum
-            ipsa, cupiditate laborum modi? Alias accusantium perspiciatis
-            molestias ad dolore tempore tempora.
+            <h2>Instrucciones:</h2>
+            <hr>
+            <h3>
+              Para tener un proceso de registro eficiente, te invitamos a seguir
+              el siguiente diagrama
+            </h3>
+            <h4 id="step-msg"></h4>
           </div>
         </div>
         <div class="ui tiny modal ">

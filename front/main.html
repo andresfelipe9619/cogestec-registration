@@ -155,17 +155,83 @@
       mForm.addClass("loading");
       if (!radioPressed) {
         formData.push({ name: "acepta_ponencia", value: "-" });
+        formData.push({ name: "ponencia_file", value: "-" });
       }
-      formData.push({ name: "ponencia_file", value: "-" });
-      // if (
-      //   !$(".doc-field").hasClass("not-visible") &&
-      //   !$(".ponencia-fields").hasClass("not-visible")
-      // ) {
-      //   console.log("hi, estudent researcher");
-      // } else if (!$(".ponencia-fields").hasClass("not-visible")) {
-      //   console.log("hi, researcher");
-      // } else
-      if (!$(".doc-field").hasClass("not-visible")) {
+
+      //SI TIENE DOCUMENTO Y PONENCIA PARA SUBIR = STUDENT RESEARCHER
+        "PONENCIA FIELD",
+        $("#ponencia_fields").hasClass("not-visible")
+      );
+
+      if (
+        !$(".doc-field").hasClass("not-visible") &&
+        !$("#ponencia_fields").hasClass("not-visible")
+      ) {
+
+        var file_ponencia = $("#ponencia_file").prop("files")[0];
+        var reader_ponencia = new FileReader();
+        var file_doc = $("#doc_file").prop("files")[0];
+        var reader_doc = new FileReader();
+
+        reader_ponencia.readAsDataURL(file_ponencia);
+        reader_ponencia.onloadend = function(e) {
+
+          function onSuccessPonencia(result) {
+
+            if (result) {
+              formData.push({ name: "ponencia_file", value: result.url });
+              reader_doc.readAsDataURL(file_doc);
+            }
+          }
+          google.script.run
+            .withSuccessHandler(onSuccessPonencia)
+            .createPonenciaFile(
+              $("input[name='cedula']").val(),
+              e.target.result
+            );
+        };
+
+        reader_doc.onloadend = function(e) {
+          function onSuccessDoc(result) {
+
+            if (result) {
+              formData.push({ name: "doc_file", value: result.url });
+              addPayment(formData);
+            }
+          }
+
+          google.script.run
+            .withSuccessHandler(onSuccessDoc)
+            .createPersonFolder(
+              $("input[name='cedula']").val(),
+              e.target.result
+            );
+        };
+      }
+      //SI TIENE PONENCIA PARA SUBIR = STUDENT AND PROFESSIONAL RESEARCHER
+      else if (!$("#ponencia_fields").hasClass("not-visible")) {
+        var file = $("#ponencia_file").prop("files")[0];
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onloadend = function(e) {
+          function onSuccess(result) {
+            if (result) {
+              formData.push({ name: "ponencia_file", value: result.url });
+              formData.push({ name: "doc_file", value: "-" });
+              addPayment(formData);
+            }
+          }
+
+          google.script.run
+            .withSuccessHandler(onSuccess)
+            .createPonenciaFile(
+              $("input[name='cedula']").val(),
+              e.target.result
+            );
+        };
+        //SI TIENE DOCUMETO PARA SUBIR = STUDENT
+      } else if (!$(".doc-field").hasClass("not-visible")) {
         var file = $("#doc_file").prop("files")[0];
         var reader = new FileReader();
         reader.readAsDataURL(file);
@@ -185,6 +251,7 @@
               e.target.result
             );
         };
+        //NO TIENE ARCHIVOS POR SUBIR = PROFESSIONAL
       } else {
         formData.push({ name: "doc_file", value: "-" });
         addPayment(formData);
@@ -202,7 +269,7 @@
 
   function registerPersonInSheet(formData) {
     function onSuccess(response) {
-      console.log("register response", response);
+      // console.log("register response", response);
 
       if (response.ok) {
         console.log(buttonpressed);
@@ -215,7 +282,7 @@
         console.log("You fucked up", response);
       }
     }
-    console.log(formData);
+    // console.log(formData);
     google.script.run.withSuccessHandler(onSuccess).registerPerson(formData);
   }
 
@@ -258,6 +325,10 @@
         }
       ]
     };
+    $("#politicas").removeClass("not-visible");
+    $(".support-ready-field").html("");
+    $(".support-ready-field").addClass("not-visible");
+
     if (attendant) {
       switch (attendant) {
         case "professional":
@@ -265,6 +336,7 @@
           concept = "Professional Attendant";
           $(".doc-field").addClass("not-visible");
           $("#ponencia_fields").addClass("not-visible");
+          showStepsMessage("student");
           $("#form-form").form({
             inline: true,
             on: "blur",
@@ -278,7 +350,8 @@
           he_pays = "$322.000";
           concept = "Professional Researcher";
           $(".doc-field").addClass("not-visible");
-          $(".file-ponencia-field").addClass("not-visible")
+          // $(".file-ponencia-field").addClass("not-visible");
+          showStepsMessage("researcher");
           $("#form-form").form({
             inline: true,
             on: "blur",
@@ -294,6 +367,7 @@
           $("#ponencia_fields").addClass("not-visible");
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
+          showStepsMessage("student");
           $("#form-form").form({
             inline: true,
             on: "blur",
@@ -308,7 +382,8 @@
           concept = "Student Researcher";
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
-          $(".file-ponencia-field").addClass("not-visible")
+          // $(".file-ponencia-field").addClass("not-visible");
+          showStepsMessage("researcher");
           ponenciaValidation.doc_file = studentValidation.doc_file;
           $("#form-form").form({
             inline: true,
@@ -332,6 +407,32 @@
     }
   }
 
+  function showStepsMessage(attendant) {
+    if (attendant === "student") {
+      $("#step-msg").html("");
+      $("#step-msg").html(`
+      <ol>
+        <li>Registra los datos completos en este formulario de inscripción.</li>
+<li>Carga el certificado de estudios que te avala como estudiante activo de pregrado.</li>
+<li>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</li>
+<li>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</li>
+<li>Realiza el pago requerido, utilizando los formularios correspondientes.</li>
+<li>Descarga la confirmación del pago.</li>
+<li>Carga el comprobante de pagos en el formulario de inscripción.</li>
+<li>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</li>
+      </ol>`);
+    } else {
+      $("#step-msg").html("");
+      $("#step-msg").html(`<ol>
+      <li>Registra los datos completos en este formulario de inscripción.</li>
+<li>Haga clic en el formulario de pago y copie los datos correspondientes.</li>
+<li>Realiza el pago requerido, utilizando los formularios correspondientes.</li>
+<li>Descarga la confirmación del pago.</li>
+<li>Carga el comprobante de pagos en el formulario de inscripción.</li>
+<li>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</li>
+      </ol>`);
+    }
+  }
 
   function searchForPerson() {
     hideForm();
@@ -374,8 +475,13 @@
 
   function disableFormFielfds(bool) {
     if (bool) {
-      $("input:not([name='busca-cedula'], [type='radio'])").prop("readonly", true);
-      $("input:not([name='busca-cedula'], [type='radio'])").addClass("not-allowed");
+      $("input:not([name='busca-cedula'], [type='radio'])").prop(
+        "readonly",
+        true
+      );
+      $("input:not([name='busca-cedula'], [type='radio'])").addClass(
+        "not-allowed"
+      );
     } else {
       $("input:not([name='busca-cedula'])").prop("readonly", false);
       $("input:not([name='busca-cedula'])").removeClass("not-allowed");
@@ -403,25 +509,42 @@
   function showPersonInForm(person) {
     loadPersonInForm(person);
     // $("#form-form").form("remove field", "politicas");
-
+    $(".support-ready-field").html("");
     if (person.data["pago_comprobado"] == "SI") {
       showPaymentApproved();
+      if (person.data.pay_file.length > 3) {
+        $(".support-ready-field").removeClass("not-visible");
+        $(".support-ready-field").html(`
+        <h2><a target="_blank" href="${
+          person.data.pay_file
+        }">Soporte Pago</a></h2>
+        `);
+      }
     } else {
       showPaymentDisapproved(person);
-      $(".support-field").removeClass("not-visible");
-      $("#form-form").form({
-        fields: {
-          pay_file: {
-            identifier: "pay_file",
-            rules: [
-              {
-                type: "pay",
-                prompt: "Por favor ingrese un archivo"
-              }
-            ]
+      if (person.data.pay_file.length > 3) {
+        $(".support-ready-field").removeClass("not-visible");
+        $(".support-ready-field").html(`
+        <h2><a target="_blank" href="${
+          person.data.pay_file
+        }">Soporte Pago</a></h2>
+        `);
+      } else {
+        $(".support-field").removeClass("not-visible");
+        $("#form-form").form({
+          fields: {
+            pay_file: {
+              identifier: "pay_file",
+              rules: [
+                {
+                  type: "pay",
+                  prompt: "Por favor ingrese un archivo"
+                }
+              ]
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     $(".doc-field").addClass("not-visible");
@@ -444,16 +567,18 @@
     $("input[name='telefono']").val(person.data.telefono);
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
+    if (!person.data.concepto_pago.includes("esearcher")) {
+      showStepsMessage("student");
+    } else {
+      showStepsMessage("researcher");
+    }
     $("input[name='pago_total']").val(person.data.pago_total);
     // $(".ui.radio").checkbox();
 
     if (person.data["acepta_ponencia"] == "SI") {
-      $("#ponencia_si").prop('checked', true)
-      // $("input[id='ponencia_si']").checkbox("check");
+      $("#ponencia_si").prop("checked", true);
     } else if (person.data["acepta_ponencia"] == "NO") {
-      $("#ponencia_no").prop('checked', true)
-
-      // $("input[id='ponencia_no']").checkbox("check");
+      $("#ponencia_no").prop("checked", true);
     } else {
       $("#ponencia_fields").addClass("not-visible");
     }
@@ -528,7 +653,7 @@
 
                 $("#register-pay-btn").addClass("loading");
                 $("#register-pay-btn").removeClass("loading");
-                showSuccesPayModal()
+                showSuccesPayModal();
               }
             } else {
               $("#form-form").removeClass("loading");
@@ -614,9 +739,7 @@
     $(".ui.modal").modal("show");
     $("#modal-form").addClass("not-visible");
     $(".actions").css("display", "block");
-    $("#result-msg").text(
-      `Su soporte de pago ha sido enviado`
-    );
+    $("#result-msg").text(`Su soporte de pago ha sido enviado`);
   }
   function formValidation() {
     $.fn.form.settings.rules.pay = function(value) {
