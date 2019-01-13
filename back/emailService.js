@@ -1,4 +1,7 @@
-var SELECTED_PERSON = { data: null, type: null, isApproved: false };
+var GENERAL_DB =
+  "https://docs.google.com/spreadsheets/d/1108Pbaw4SD_Cpx2xc6Q7x1UvrET0SsPgNNZOPumt9Gg/edit#gid=0";
+
+var SELECTED_PERSON = { data: null, type: null, isApproved: false, row: null };
 function onSpreadSheetEdit(e) {
   var range = e.range;
   checkEditedCell(range);
@@ -16,6 +19,7 @@ function checkEditedCell(range) {
   rawPerson = rawPerson.map(function(value) {
     return value.toString();
   });
+  SELECTED_PERSON.row = range.getRow();
   SELECTED_PERSON.data = {
     cedula: rawPerson[2],
     nombre: rawPerson[0] + " " + rawPerson[1],
@@ -53,8 +57,25 @@ function handleOnDocumentChange(range) {
     sendDocDisapprovedMail();
   }
 }
+function getSheetFromSpreadSheet(url, sheet) {
+  var Spreedsheet = SpreadsheetApp.openByUrl(url);
+  if (url && sheet) return Spreedsheet.getSheetByName(sheet);
+}
+
+function applyStudentDisccount(){
+  var index = SELECTED_PERSON.row;
+  var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
+  var headers = inscritosSheet.getSheetValues(1, 1, 1, inscritosSheet.getLastColumn())[0];
+  var pagoIndex = headers.indexOf('PAGO_TOTAL')
+  if(SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1){
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$160.000"]])
+  } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Attendant") !== -1) {
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$200.000"]])
+  }
+}
 
 function sendDocApprovedMail() {
+  applyStudentDisccount()
   var htmlBody = buildDocApprovedBody();
   var subject = "Solicitud de descuento COGESTEC Aceptado.";
   sendEmail(subject, htmlBody);
@@ -79,7 +100,6 @@ function sendResearcherPayApprovedMail() {
 }
 
 function sendPayDisapprovedMail() {}
-
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
   Logger.log(body);

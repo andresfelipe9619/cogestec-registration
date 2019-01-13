@@ -159,10 +159,6 @@
       }
 
       //SI TIENE DOCUMENTO Y PONENCIA PARA SUBIR = STUDENT RESEARCHER
-        "PONENCIA FIELD",
-        $("#ponencia_fields").hasClass("not-visible")
-      );
-
       if (
         !$(".doc-field").hasClass("not-visible") &&
         !$("#ponencia_fields").hasClass("not-visible")
@@ -510,6 +506,14 @@
     loadPersonInForm(person);
     // $("#form-form").form("remove field", "politicas");
     $(".support-ready-field").html("");
+    if (person.data.ponencia_file.length > 3) {
+        $(".support-ready-field").removeClass("not-visible");
+        $(".support-ready-field").html(`
+        <h2><a target="_blank" href="${
+          person.data.ponencia_file
+        }">Archivo Ponencia</a></h2>
+        `);
+      }
     if (person.data["pago_comprobado"] == "SI") {
       showPaymentApproved();
       if (person.data.pay_file.length > 3) {
