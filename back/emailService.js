@@ -16,7 +16,7 @@ function checkEditedCell(range) {
     sheet.getLastColumn()
   );
   var rawPerson = sheetValues[0];
-  rawPerson = rawPerson.map(function(value) {
+  rawPerson = rawPerson.map(function (value) {
     return value.toString();
   });
   SELECTED_PERSON.row = range.getRow();
@@ -62,29 +62,35 @@ function getSheetFromSpreadSheet(url, sheet) {
   if (url && sheet) return Spreedsheet.getSheetByName(sheet);
 }
 
-function applyStudentDisccount(){
+function refuseStudentDisccount() {
   var index = SELECTED_PERSON.row;
   var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
-  var headers = inscritosSheet.getSheetValues(1, 1, 1, inscritosSheet.getLastColumn())[0];
-  var pagoIndex = headers.indexOf('PAGO_TOTAL')
-  if(SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1){
-    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$160.000"]])
-  } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Attendant") !== -1) {
-    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$200.000"]])
+  var headers = inscritosSheet.getSheetValues(
+    1,
+    1,
+    1,
+    inscritosSheet.getLastColumn()
+  )[0];
+  var pagoIndex = headers.indexOf("PAGO_TOTAL");
+  if (SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1) {
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$437.000"]]);
+  } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Student") !== -1) {
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$322.000"]]);
   }
+  var subject = "Solicitud de descuento COGESTEC Denegada.";
+  sendEmail(subject, htmlBody);
 }
 
 function sendDocApprovedMail() {
-  applyStudentDisccount()
   var htmlBody = buildDocApprovedBody();
   var subject = "Solicitud de descuento COGESTEC Aceptado.";
   sendEmail(subject, htmlBody);
 }
 
 function sendDocDisapprovedMail() {
+  refuseStudentDisccount();
   var htmlBody = buildDocDisapprovedBody();
-  var subject = "Solicitud de descuento COGESTEC Denegada.";
-  sendEmail(subject, htmlBody);
+
 }
 
 function sendAttendantPayApprovedMail() {
@@ -99,7 +105,7 @@ function sendResearcherPayApprovedMail() {
   sendEmail(subject, htmlBody);
 }
 
-function sendPayDisapprovedMail() {}
+function sendPayDisapprovedMail() { }
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
   Logger.log(body);
@@ -142,7 +148,9 @@ function buildResearcherPayApprovedBody() {
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
-  body = body.concat('<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' );
+  body = body.concat(
+    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>'
+  );
   return body;
 }
 
@@ -158,7 +166,9 @@ function buildAttendantPayApprovedBody() {
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
-  body = body.concat('<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>' );
+  body = body.concat(
+    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>'
+  );
   return body;
 }
 
@@ -182,9 +192,9 @@ function buildDocApprovedBody() {
     SELECTED_PERSON.data.nombre +
     ", ha sido aprobada tu solicitud de descuento, felicitaciones.</p>" +
     "<p>A continuación la información que deberás copiar en el formulario de pago.</p>";
-    var modal = buildModal(successMsg);
-    body = body.concat(modal);
-    return body;
+  var modal = buildModal(successMsg);
+  body = body.concat(modal);
+  return body;
 }
 
 function buildModal(successMsg) {
@@ -197,7 +207,7 @@ function buildModal(successMsg) {
     '<div id="pay_info_modal" ' +
     'class="ui medium center aligned inverted header">' +
     '<i class="icon lock"></i>' +
-    '<strong>INFORMACIÓN DE PAGO</strong><br/>' +
+    "<strong>INFORMACIÓN DE PAGO</strong><br/>" +
     "</div>" +
     '<div class="inline field">' +
     "<strong>*NIT o Cédula:  </strong>" +
@@ -214,7 +224,8 @@ function buildModal(successMsg) {
     '<div class="inline field">' +
     "<strong>*Pago Total:  </strong>" +
     "<label>" +
-    SELECTED_PERSON.data.pago_total+"(pesos colombianos)"+
+    SELECTED_PERSON.data.pago_total +
+    "(pesos colombianos)" +
     " </label>" +
     "</div>" +
     '<div class="inline field">' +
@@ -237,12 +248,10 @@ function buildModal(successMsg) {
     "</div>" +
     "<br />" +
     '<div class="actions">' +
-    "<button " +
-    'id="modal-payment" ' +
-    'type="reset" ' +
-    'onclick="location.href=\'https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111\'"' +
-    ">Generar pago" +
-    "</button>" +
+    '<button style="color:red">' +
+    '<a href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111">' +
+    "<h2>Generar pago</h2>" +
+    "</a></button>" +
     "</div>" +
     "</form>" +
     "</div>";

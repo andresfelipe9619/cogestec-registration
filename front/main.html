@@ -392,6 +392,7 @@
           break;
       }
       requestPayload = he_pays;
+      $("#ponencia_si").prop("checked", true);
       $("input[name='concepto_pago']").val(concept);
       $("input[name='concepto_pago']").prop("readonly", true);
       $("input[name='concepto_pago']").addClass("not-allowed");
@@ -502,59 +503,61 @@
 
   function showPersonInForm(person) {
     loadPersonInForm(person);
+    console.log("show in form");
     $(".ponencia-ready-field").html("");
+    $(".support-ready-field").html("");
+
     if (person.data.ponencia_file.length > 3) {
       $(".ponencia-ready-field").removeClass("not-visible");
       $(".ponencia-ready-field").html(`
-        <h2><a target="_blank" href="${
+        <h2><a style="text-decoration: underline" target="_blank" href="${
           person.data.ponencia_file
-        }">Archivo Ponencia</a></h2>
-        `);
-    }
-    if (
-      person.data["pago_comprobado"] == "SI" &&
-      person.data.pay_file.length > 3
-    ) {
-      //muestra pago comprobado y si tiene archivo lo muestra
-      showPaymentApproved();
-
-      $("#register-pay-btn").addClass("not-visible");
-      $(".support-ready-field").removeClass("not-visible");
-      $(".support-ready-field").html(`
-        <h2><a target="_blank" href="${
-          person.data.pay_file
-        }">Soporte Pago</a></h2>
+        }">Ver Archivo Ponencia</a></h2>
         `);
     } else {
-      //deoronto el pago es aprobado antes que lo suban
-      if (person.data["pago_comprobado"] == "SI") {
-        showPaymentApproved();
-      }
+      $(".ponencia-ready-field").addClass("not-visible");
+      $(".ponencia-ready-field").html("");
+    }
+    //muestra pago comprobado
+    if (person.data["pago_comprobado"] == "SI") {
+      showPaymentApproved();
+
+      $(".support-ready-field").removeClass("not-visible");
+    } else {
       //no se a comprobado pago, se pide archivo
       showPaymentDisapproved(person);
-      if (person.data.pay_file.length > 3) {
-        $(".support-ready-field").removeClass("not-visible");
-        $(".support-ready-field").html(`
-        <h2><a target="_blank" href="${
+    }
+    if (person.data.pay_file.length > 3) {
+      $(".file-ponencia-field").addClass("not-visible");
+      $(".support-ready-field").removeClass("not-visible");
+      $("#register-pay-btn").addClass("not-visible");
+
+      $(".support-ready-field").html(`
+        <h2><a target="_blank" style="text-decoration:underline" href="${
           person.data.pay_file
-        }">Soporte Pago</a></h2>
+        }">Ver Soporte Pago</a></h2>
         `);
-      } else {
-        $(".support-field").removeClass("not-visible");
-        $("#form-form").form({
-          fields: {
-            pay_file: {
-              identifier: "pay_file",
-              rules: [
-                {
-                  type: "pay",
-                  prompt: "Por favor ingrese un archivo"
-                }
-              ]
-            }
+    } else if (person.data["pago_comprobado"] == "SI") {
+      $("#register-pay-btn").addClass("not-visible");
+      $(".file-ponencia-field").addClass("not-visible");
+      $(".support-ready-field").removeClass("not-visible");
+    } else {
+      $(".support-ready-field").html("");
+      $(".support-field").removeClass("not-visible");
+      $("#register-pay-btn").removeClass("not-visible");
+      $("#form-form").form({
+        fields: {
+          pay_file: {
+            identifier: "pay_file",
+            rules: [
+              {
+                type: "pay",
+                prompt: "Por favor ingrese un archivo"
+              }
+            ]
           }
-        });
-      }
+        }
+      });
     }
 
     $(".doc-field").addClass("not-visible");
@@ -640,7 +643,7 @@
                   El pago de su inscripción aun no ha sido comprobado.
                   Usted ha sido registrado como ${person.data.concepto_pago}
                 </div>`);
-    $("#register-pay-btn").removeClass("not-visible");
+    // $("#register-pay-btn").removeClass("not-visible");
   }
 
   function modalPayment() {
