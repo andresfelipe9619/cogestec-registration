@@ -155,6 +155,7 @@
       var mForm = $("#form-form");
       var formData = mForm.serializeArray();
       mForm.addClass("loading");
+      $("#pls-wait").removeClass("not-visible");
       if (!radioPressed) {
         formData.push({ name: "acepta_ponencia", value: "-" });
         formData.push({ name: "ponencia_file", value: "-" });
@@ -566,6 +567,7 @@
     $("#submit-pay-btn").addClass("not-visible");
 
     disableFormFielfds(true);
+    $("#pls-wait").addClass("not-visible");
     $("#form-form").removeClass("loading");
   }
 
@@ -680,7 +682,10 @@
   function submitPayment() {
     // $("#form-form").form('validate form')
     if ($("#form-form").form("validate field", "pay_file")) {
+      
       $("#form-form").addClass("loading");
+      $("#pls-wait").removeClass("not-visible");
+
       if (personIndex) {
         var file = $("#pay_file").prop("files")[0];
         var reader = new FileReader();
@@ -691,6 +696,7 @@
             if (result) {
               if (currentPerson) {
                 $("#form-form").removeClass("loading");
+                $("#pls-wait").addClass("not-visible");
 
                 $("#register-pay-btn").addClass("loading");
                 $("#register-pay-btn").removeClass("loading");
@@ -710,6 +716,7 @@
             );
         };
       } else {
+        $("#pls-wait").removeClass("not-visible");
         $("#form-form").removeClass("loading");
       }
     }
@@ -741,6 +748,7 @@
 
   function showPersonInModal(person) {
     $("#form-form").removeClass("loading");
+    $("#pls-wait").removeClass("not-visible");
     $("#result-msg").text("");
     $(".ui.modal").modal("show");
     $(".actions").css("display", "block");
@@ -766,6 +774,7 @@
 
   function showDiscountModal() {
     $("#form-form").removeClass("loading");
+    $("#pls-wait").removeClass("not-visible");
     $("#result-msg").text("");
     $(".ui.modal").modal("show");
     $("#modal-form").addClass("not-visible");

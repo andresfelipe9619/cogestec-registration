@@ -77,6 +77,7 @@ function refuseStudentDisccount() {
   } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Student") !== -1) {
     inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$322.000"]]);
   }
+  var htmlBody = buildDocDisapprovedBody();
   var subject = "Solicitud de descuento COGESTEC Denegada.";
   sendEmail(subject, htmlBody);
 }
@@ -89,7 +90,6 @@ function sendDocApprovedMail() {
 
 function sendDocDisapprovedMail() {
   refuseStudentDisccount();
-  var htmlBody = buildDocDisapprovedBody();
 
 }
 
