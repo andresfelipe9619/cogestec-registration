@@ -16,7 +16,7 @@ function checkEditedCell(range) {
     sheet.getLastColumn()
   );
   var rawPerson = sheetValues[0];
-  rawPerson = rawPerson.map(function (value) {
+  rawPerson = rawPerson.map(function(value) {
     return value.toString();
   });
   SELECTED_PERSON.row = range.getRow();
@@ -72,10 +72,22 @@ function refuseStudentDisccount() {
     inscritosSheet.getLastColumn()
   )[0];
   var pagoIndex = headers.indexOf("PAGO_TOTAL");
+  var conceptoIndex = headers.indexOf("CONCEPTO_PAGO");
+
   if (SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1) {
-    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$437.000"]]);
-  } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Student") !== -1) {
     inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$322.000"]]);
+    inscritosSheet
+      .getRange(index, conceptoIndex + 1)
+      .setValues([["Professional Researcher"]]);
+    SELECTED_PERSON.data.concepto_pago = "Professional Researcher";
+    SELECTED_PERSON.data.pago_total = "$322.000";
+  } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Student") !== -1) {
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$437.000"]]);
+    inscritosSheet
+      .getRange(index, conceptoIndex + 1)
+      .setValues([["Professional"]]);
+    SELECTED_PERSON.data.concepto_pago = "Professional";
+    SELECTED_PERSON.data.pago_total = "$437.000";
   }
   var htmlBody = buildDocDisapprovedBody();
   var subject = "Solicitud de descuento COGESTEC Denegada.";
@@ -90,7 +102,6 @@ function sendDocApprovedMail() {
 
 function sendDocDisapprovedMail() {
   refuseStudentDisccount();
-
 }
 
 function sendAttendantPayApprovedMail() {
@@ -105,7 +116,7 @@ function sendResearcherPayApprovedMail() {
   sendEmail(subject, htmlBody);
 }
 
-function sendPayDisapprovedMail() { }
+function sendPayDisapprovedMail() {}
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
   Logger.log(body);
