@@ -59,9 +59,17 @@
       <div class="row">
         <div id="mainForm" class="twelve wide center column">
           <div id="pay-msg" class="ui success message not-visible"></div>
+          <div class="ui message">
+            <i class="compass outline"></i>
+            <h2>Instrucciones:</h2>
+            <hr />
+            <h3>
+              Para tener un proceso de registro eficiente, te invitamos a seguir
+              el siguiente diagrama
+            </h3>
+            <h4 id="step-msg"></h4>
+          </div>
           <form class="ui form attached fluid segment" id="form-form">
-            <!-- <div class="ui error message"><i class="close icon"></i></div> -->
-
             <h4 class="ui dividing header">Información General</h4>
             <div class="field">
               <div class="two fields">
@@ -143,9 +151,10 @@
             </div>
             <div class="field support-field not-visible">
               <label for="pay_file"
-                ><strong>SOPORTE DE PAGO</strong> <br />
-                Por favor, cargar un SOPORTE DE PAGO (formato .PDF)</label
-              >
+                ><strong id="carga-soporte">SOPORTE DE PAGO</strong>
+                <br />
+                Por favor, cargar un SOPORTE DE PAGO (formato .PDF)
+              </label>
               <input
                 type="file"
                 id="pay_file"
@@ -265,18 +274,12 @@
             proceso de inscripción, por favor escríbanos al correo electrónico.
             <a href="mailto:info@cogestec.co" target="_top">info@cogestec.co</a>
           </div>
-          <div id="pls-wait" class="ui bottom attached info message not-visible">
-         Por Favor espere, estamos guardando sus documentos,esto podria tardar mas de un minuto.
-          </div>
-          <div class="ui message">
-            <i class="compass outline"></i>
-            <h2>Instrucciones:</h2>
-            <hr />
-            <h3>
-              Para tener un proceso de registro eficiente, te invitamos a seguir
-              el siguiente diagrama
-            </h3>
-            <h4 id="step-msg"></h4>
+          <div
+            id="pls-wait"
+            class="ui bottom attached info message not-visible"
+          >
+            Por Favor espere, estamos guardando sus documentos,esto podria
+            tardar mas de un minuto.
           </div>
         </div>
         <div class="ui tiny modal ">
