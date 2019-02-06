@@ -113,6 +113,7 @@
     $(".ui.radio.checkbox").checkbox({
       onChecked: function() {
         radioPressed = $(this).attr("value");
+        console.log("radio pressed", radioPressed);
         if (personIndex > -1 && currentPerson) {
           $("#ponencia-change-msg").removeClass("not-visible");
         }
@@ -156,11 +157,23 @@
       var formData = mForm.serializeArray();
       mForm.addClass("loading");
       $("#pls-wait").removeClass("not-visible");
+
+      console.log("radio", radioPressed);
+      if (
+        !$("#ponencia_fields").hasClass("not-visible") &&
+        radioPressed === undefined
+      ) {
+        var fIndex = formData.findIndex(f => f.name === "acepta_ponencia");
+        console.log("findex", fIndex);
+        radioPressed = "SI";
+        formData[fIndex] = { name: "acepta_ponencia", value: radioPressed };
+      }
       if (!radioPressed) {
+        formData.push({ name: "nombre_ponencia", value: "" });
+
         formData.push({ name: "acepta_ponencia", value: "-" });
         formData.push({ name: "ponencia_file", value: "-" });
       }
-
       //SI TIENE DOCUMENTO Y PONENCIA PARA SUBIR = STUDENT RESEARCHER
       if (
         !$(".doc-field").hasClass("not-visible") &&
@@ -302,6 +315,15 @@
       ]
     };
     var ponenciaValidation = Object.assign({}, formValidationFields);
+    ponenciaValidation.noombre_ponencia = {
+      identifier: "nombre_ponencia",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor escriba el nombre de su ponencia"
+        }
+      ]
+    };
     ponenciaValidation.acepta_ponencia = {
       identifier: "acepta_ponencia",
       rules: [
@@ -413,8 +435,9 @@
 <li><span>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</span></li>
 <li><span>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</span></li>
 <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
-<li><span>Descarga la confirmación del pago.</span></li>
-<li><span>Carga el comprobante de pagos en el formulario de inscripción.</span></li>
+<li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
+<li><span>Ingrese su número de identificación.</span></li>
+<li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
 <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
       </ol>`);
     } else {
@@ -423,8 +446,9 @@
       <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
 <li><span>Haga clic en el formulario de pago y copie los datos correspondientes.</span></li>
 <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
-<li><span>Descarga la confirmación del pago.</span></li>
-<li><span>Carga el comprobante de pagos en el formulario de inscripción.</span></li>
+<li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
+<li><span>Ingrese su número de identificación.</span></li>
+<li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
 <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
       </ol>`);
     }
@@ -682,7 +706,6 @@
   function submitPayment() {
     // $("#form-form").form('validate form')
     if ($("#form-form").form("validate field", "pay_file")) {
-      
       $("#form-form").addClass("loading");
       $("#pls-wait").removeClass("not-visible");
 

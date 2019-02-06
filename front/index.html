@@ -61,7 +61,7 @@
           <div id="pay-msg" class="ui success message not-visible"></div>
           <div class="ui message">
             <i class="compass outline"></i>
-            <h2>Instrucciones:</h2>
+            <h2 style="margin-top: -10px">Instrucciones:</h2>
             <hr />
             <h3>
               Para tener un proceso de registro eficiente, te invitamos a seguir
@@ -164,50 +164,48 @@
             </div>
             <div class="field support-ready-field not-visible"></div>
             <div id="ponencia_fields">
-              <div class="inline fields">
-                <label
-                  >En caso de ser aceptada la ponencia, autorizo que sea
-                  publicada en las memorias del Congreso (con ISBN)</label
-                >
-                <div class="field">
-                  <div class="ui radio checkbox">
-                    <input
-                      id="ponencia_no"
-                      name="acepta_ponencia"
-                      type="radio"
-                      value="NO"
-                      tabindex="0"
-                      class="hidden"
-                    />
-                    <label>NO</label>
-                  </div>
-                </div>
-                <div class="field">
-                  <div class="ui radio checkbox">
-                    <input
-                      id="ponencia_si"
-                      name="acepta_ponencia"
-                      type="radio"
-                      value="SI"
-                      tabindex="0"
-                      class="hidden"
-                    />
-                    <label>SI</label>
-                  </div>
-                </div>
-
-                <div class="field file-ponencia-field">
-                  <label for="ponencia_file"
-                    ><strong>ARCHIVO PONENCIA</strong> <br />
-                    Por favor, cargar un ARCHIVO DE PONENCIA(formato
-                    .PDF)</label
-                  >
+              <div class="fields">
+                <div class="eight wide field">
+                  <label for="nombre_ponencia">
+                    Nombre de la Ponencia
+                  </label>
                   <input
-                    type="file"
-                    id="ponencia_file"
-                    name="ponencia_file"
-                    accept="application/pdf "
+                    type="text"
+                    name="nombre_ponencia"
+                    id="nombre_ponencia"
                   />
+                </div>
+                <div class="eight wide field">
+                  <label
+                    >En caso de ser aceptada la ponencia, autorizo que sea
+                    publicada en las memorias del Congreso (con ISBN)</label
+                  >
+                  <div class="field">
+                    <div class="ui radio checkbox">
+                      <input
+                        id="ponencia_no"
+                        name="acepta_ponencia"
+                        type="radio"
+                        value="NO"
+                        tabindex="0"
+                        class="hidden"
+                      />
+                      <label>NO</label>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="ui radio checkbox">
+                      <input
+                        id="ponencia_si"
+                        name="acepta_ponencia"
+                        type="radio"
+                        value="SI"
+                        tabindex="0"
+                        class="hidden"
+                      />
+                      <label>SI</label>
+                    </div>
+                  </div>
                 </div>
                 <div id="ponencia-change-msg" class="ui message not-visible">
                   <div class="content">
@@ -225,6 +223,19 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <div class="field file-ponencia-field">
+                <label for="ponencia_file"
+                  ><strong>ARCHIVO PONENCIA</strong> <br />
+                  Por favor, cargar un ARCHIVO DE PONENCIA(formato .DOC o
+                  DOCX)</label
+                >
+                <input
+                  type="file"
+                  id="ponencia_file"
+                  name="ponencia_file"
+                  accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                />
               </div>
             </div>
             <div class="field ponencia-ready-field not-visible"></div>
