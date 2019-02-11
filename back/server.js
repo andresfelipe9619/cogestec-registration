@@ -84,8 +84,20 @@ function registerPerson(person) {
     name: "hora_registro",
     value: new Date().toLocaleDateString()
   });
+  var payIndex = -1;
+  for (var i in person) {
+    if (person[i] && person[i]["name"] === "pay_file") {
+      payIndex = i;
+    }
+  }
+
+  if (
+    payIndex === -1 ||
+    (payIndex !== -1 && !person[payIndex].value.length > 3)
+  ) {
+    person.push({ name: "pay_file", value: "-" });
+  }
   person.push({ name: "pago_comprobado", value: "-" });
-  person.push({ name: "pay_file", value: "-" });
 
   logFunctionOutput("person", person);
 
@@ -127,7 +139,6 @@ function changePonencia(index, value) {
   inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[value]]);
   return true;
 }
-
 
 function validatePerson(cedula) {
   var inscritos = getPeopleRegistered();
@@ -186,7 +197,7 @@ function getMainFolder() {
   }
   return mainFolder;
 }
-function createPersonFile(name, numdoc, data){
+function createPersonFile(name, numdoc, data) {
   var result = {
     url: "",
     file: ""
@@ -207,26 +218,31 @@ function createPersonFile(name, numdoc, data){
 }
 
 function createPersonFolder(numdoc, data) {
-  var res = createPersonFile("DOCUMENTO", numdoc, data)
+  var res = createPersonFile("DOCUMENTO", numdoc, data);
   return res;
 }
 
 function createPaymentFile(numdoc, data) {
-  var res = createPersonFile("PAY", numdoc, data)
+  var res = createPersonFile("PAY", numdoc, data);
   return res;
 }
-function generatePayment(index, numdoc, file){
+function generatePayment(index, numdoc, file) {
   var inscritosSheet = getSheetFromSpreadSheet(GENERAL_DB, "INSCRITOS");
-  var headers = inscritosSheet.getSheetValues(1, 1, 1, inscritosSheet.getLastColumn())[0];
-  var pagoIndex = headers.indexOf('PAY_FILE')
-  var mfile = createPaymentFile(numdoc, file)
+  var headers = inscritosSheet.getSheetValues(
+    1,
+    1,
+    1,
+    inscritosSheet.getLastColumn()
+  )[0];
+  var pagoIndex = headers.indexOf("PAY_FILE");
+  var mfile = createPaymentFile(numdoc, file);
   // logFunctionOutput(generatePayment.name, inscritosSheet.getRange(index, pagoIndex).getValues())
-  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[mfile.url]])
-  return true
+  inscritosSheet.getRange(index + 1, pagoIndex + 1).setValues([[mfile.url]]);
+  return true;
 }
 
-function createPonenciaFile(numdoc, data){
-  var res = createPersonFile("PONENCIA", numdoc, data)
+function createPonenciaFile(numdoc, data) {
+  var res = createPersonFile("PONENCIA", numdoc, data);
   return res;
 }
 
@@ -274,8 +290,7 @@ function objectToSheetValues(object, headers) {
 
 function sheetValuesToObject(sheetValues, headers) {
   var headings = headers || sheetValues[0].map(String.toLowerCase);
-  if(sheetValues)
-  var people = sheetValues.slice(1);
+  if (sheetValues) var people = sheetValues.slice(1);
   var peopleWithHeadings = addHeadings(people, headings);
 
   function addHeadings(people, headings) {
