@@ -117,6 +117,7 @@ function sendResearcherPayApprovedMail() {
 }
 
 function sendPayDisapprovedMail() {}
+
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
   Logger.log(body);
@@ -133,9 +134,8 @@ function sendEmail(subject, body) {
 
 function getPersonQR() {
   var qrserver = "http://api.qrserver.com/v1/create-qr-code/";
-  var qrimage =
-    "" +
-    '<img src="' +
+  var qrimage = " " + "<strong>Su ID digital está aquí:</strong>";
+  '<img src="' +
     qrserver +
     "?color=000000&amp;bgcolor=FFFFFF&amp;" +
     "data=" +
@@ -146,40 +146,34 @@ function getPersonQR() {
 
 function buildResearcherPayApprovedBody() {
   var body = "";
-  var successMsg =
-    "<p>Cordial saludo " +
-    SELECTED_PERSON.data.nombre +
-    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia, en este email adjuntaremos un código QR, por favor, " +
-    "preséntarlo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
-    "<p>Recuerda que obtendrás certificado como ponente por presentar tu ponencia en la fecha y hora asignadas y como asistente al evento, al pasar por la mesa de registro el día del evento.</p>" +
-    '<p>Recuerda que siempre podrás consultar la agenda en el siguiente enlace: <a href="http://www.cogestec.co/agenda/">http://www.cogestec.co/agenda/</a></p>' +
+  var successMsg = getSuccessMessage();
+  var complement =
     '<p>La información de interés para ponentes se encuentra en el siguiente enlace: <a href="http://www.cogestec.co/ponentes/">http://www.cogestec.co/ponentes/</a></p>' +
     "<p>Te agradecemos por hacer parte de la historia de la innovación en Colombia, esperamos conozcas personas y empresas interesadas en la innovación como tú, de la que puedan construir relaciones de mutuo beneficio.</p>" +
     "<p>COGESTEC 2019 te desea un excelente día.</p>";
+  successMsg.concat(complement);
+  successMsg.concat(getLogo());
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
-  body = body.concat(
-    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>'
-  );
+  body = body.concat(getBanner());
   return body;
 }
 
 function buildAttendantPayApprovedBody() {
   var body = "";
-  var successMsg =
-    "<p>Cordial saludo " +
-    SELECTED_PERSON.data.nombre +
-    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
-    " en este email adjuntaremos un código QR, por favor, preséntarlo en el ingreso al evento académico para que hagas el ingreso en las sedes del evento.</p>" +
-    "<br/>Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/" +
-    "<p>Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.</p>";
+  var successMsg = getSuccessMessage();
+  successMsg.concat(
+    "<br/>Podrás consultar la agenda en el siguiente enlace: http://www.cogestec.co/agenda/"
+  );
+  successMsg.concat(
+    "<p>Recuerda que obtendrás certificado al pasar por las mesas de registro del evento académico.</p>"
+  );
+  successMsg.concat(getLogo());
   body = successMsg;
   var qr = getPersonQR();
   body = body.concat(qr);
-  body = body.concat(
-    '<img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/>'
-  );
+  body = body.concat(getBanner());
   return body;
 }
 
@@ -268,4 +262,27 @@ function buildModal(successMsg) {
     "</div>";
 
   return modal;
+}
+
+function getSuccessMessage() {
+  return (
+    "<p>Cordial saludo " +
+    SELECTED_PERSON.data.nombre +
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
+    "eres un invitado especial a este evento exclusivo donde conocerás métodos y estudios relacionados al emprendimiento, estrategias y técnicas para transformar tu visión; " +
+    "así mismo, investigaciones académicas sobre los impactos que tendrá la tecnología en el mundo moderno." +
+    'En este email adjuntaremos un código QR, por favor, preséntarlo en las <span style="text-decoration: underline"> mesas de registro</span> al ingreso del evento, allí le entregarán su escarapela de ingreso,' +
+    'requerida para ingresar a las conferencias y otros servicios del evento, de igual manera es <span style="text-decoration: underline">la única forma </span> de obtener su certificado como ponente/asistente.</p>'
+  );
+}
+function getLogo() {
+  return (
+    "<strong>Haga clic en el logo para conocer la agenda:</strong>" +
+    '<a href="http://www.cogestec.co/agenda/"><img src = "http://www.cogestec.co/wp-content/uploads/2018/11/Logo-3.png" ' +
+    'width = "180px" height = "90px" /></a>'
+  );
+}
+function getBanner() {
+  "<strong>¡Sigue nuestras redes sociales y comunica tu vínculo directo con la innovación</strong>" +
+    '<a href="http://www.cogestec.co/agenda/"><img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/></a>';
 }
