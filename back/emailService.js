@@ -31,7 +31,7 @@ function checkEditedCell(range) {
   };
   if (range.getColumn() == 8) {
     handleOnPaymentChange(range);
-  } else if (range.getColumn() == 12) {
+  } else if (range.getColumn() == 13) {
     handleOnDocumentChange(range);
   }
 }
@@ -52,10 +52,15 @@ function handleOnPaymentChange(range) {
 }
 
 function handleOnDocumentChange(range) {
+  Logger.log("doc change");
+  Logger.log(range);
   SELECTED_PERSON.type = "DOC";
   if (range.getValue() == "SI") {
+    Logger.log("doc change si");
+
     sendDocApprovedMail();
   } else if (range.getValue() == "NO") {
+    Logger.log("doc change no");
     sendDocDisapprovedMail();
   }
 }
