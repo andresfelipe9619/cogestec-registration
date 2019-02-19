@@ -59,6 +59,24 @@
         }
       ]
     },
+    pais: {
+      identifier: "pais",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese un pais"
+        }
+      ]
+    },
+    institucion: {
+      identifier: "institucion",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor ingrese una institucion"
+        }
+      ]
+    },
     concepto_pago: {
       identifier: "concepto_pago",
       rules: [
@@ -170,9 +188,11 @@
       }
       if (!radioPressed) {
         formData.push({ name: "nombre_ponencia", value: "-" });
-
         formData.push({ name: "acepta_ponencia", value: "-" });
         formData.push({ name: "ponencia_file", value: "-" });
+        formData.push({ name: "autor1", value: "-" });
+        formData.push({ name: "autor2", value: "-" });
+        formData.push({ name: "autor3", value: "-" });
       }
       if (!$(".support-field").hasClass("not-visible")) {
         let file = $("#pay_file").prop("files")[0];
@@ -343,6 +363,15 @@
         {
           type: "empty",
           prompt: "Por favor escriba el nombre de su ponencia"
+        }
+      ]
+    };
+    ponenciaValidation.autor1 = {
+      identifier: "autor1",
+      rules: [
+        {
+          type: "empty",
+          prompt: "Por favor escriba el nombre del autor"
         }
       ]
     };
@@ -652,12 +681,19 @@
     $("input[name='apellidos']").val(person.data.apellidos);
     $("input[name='cedula']").val(person.data.cedula);
     $("input[name='correo']").val(person.data.correo);
+    $("#dropdown").dropdown("set selected", person.data.pais);
+    $("input[name='institucion']").val(person.data.institucion);
+
     $("input[name='telefono']").val(person.data.telefono);
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     if (!person.data.concepto_pago.includes("esearcher")) {
       showStepsMessage("student");
     } else {
+      $("input[name='nombre_ponencia']").val(person.data.nombre_ponencia);
+      $("input[name='autor1']").val(person.data.autor1);
+      $("input[name='autor2']").val(person.data.autor2);
+      $("input[name='autor3']").val(person.data.autor3);
       showStepsMessage("researcher");
     }
     $("input[name='pago_total']").val(person.data.pago_total);
@@ -794,6 +830,7 @@
   }
 
   function showPersonInModal(person) {
+    console.log("show modal", person);
     $("#form-form").removeClass("loading");
     $("#pls-wait").removeClass("not-visible");
     $("#result-msg").text("");

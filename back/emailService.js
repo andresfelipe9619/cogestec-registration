@@ -16,6 +16,8 @@ function checkEditedCell(range) {
     sheet.getLastColumn()
   );
   var rawPerson = sheetValues[0];
+  Logger.log("range");
+  Logger.log(rawPerson);
   rawPerson = rawPerson.map(function(value) {
     return value.toString();
   });
@@ -24,14 +26,18 @@ function checkEditedCell(range) {
     cedula: rawPerson[2],
     nombre: rawPerson[0] + " " + rawPerson[1],
     email: rawPerson[3],
-    pago_total: rawPerson[6],
-    concepto_pago: rawPerson[5],
+    pago_total: rawPerson[8],
+    concepto_pago: rawPerson[7],
     dependecia: "COGESTEC 2019",
     telefono: rawPerson[4]
   };
-  if (range.getColumn() == 8) {
+  Logger.log;
+  if (rawPerson[5].toLowerCase() !== "colombia") {
+    return;
+  }
+  if (range.getColumn() == 10) {
     handleOnPaymentChange(range);
-  } else if (range.getColumn() == 13) {
+  } else if (range.getColumn() == 18) {
     handleOnDocumentChange(range);
   }
 }
@@ -123,8 +129,6 @@ function sendResearcherPayApprovedMail() {
   sendEmail(subject, htmlBody);
 }
 
-function sendPayDisapprovedMail() {}
-
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
   Logger.log(body);
@@ -198,10 +202,24 @@ function buildDocApprovedBody() {
   var successMsg =
     "<p>Cordial saludo " +
     SELECTED_PERSON.data.nombre +
-    ", ha sido aprobada tu solicitud de descuento, felicitaciones.</p>" +
-    "<p>A continuación la información que deberás copiar en el formulario de pago.</p>";
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
+    "eres un invitado especial a este evento exclusivo donde conocerás métodos y estudios relacionados al emprendimiento, estrategias y técnicas para transformar tu visión; " +
+    "así mismo, investigaciones académicas sobre los impactos que tendrá la tecnología en el mundo moderno." +
+    "<br/> En este email te daremos los detalles para que realices el pago con descuento:";
   var modal = buildModal(successMsg);
   body = body.concat(modal);
+
+  body = body.concat(
+    "<strong>Enlace para pago: </strong><br/>" +
+      '<a href="https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111">' +
+      "https://www.psepagos.co/PSEHostingUI/ShowTicketOffice.aspx?ID=4111</a><br/>"
+  );
+  body = body.concat(
+    "<strong>Enlace para cargar el comprobante de pago: </strong><br/>" +
+      '<a href="https://script.google.com/a/macros/correounivalle.edu.co/s/AKfycbw3gbuDvJwe5_pccF52DLGu8Jqeh8zKmy-_P14omklUvu74Kb2z/exec?attendant=student_r">' +
+      "https://script.google.com/a/macros/correounivalle.edu.co/s/AKfycbw3gbuDvJwe5_pccF52DLGu8Jqeh8zKmy-_P14omklUvu74Kb2z/exec?attendant=student_r</a><br/>"
+  );
+  body = body.concat(getBanner());
   return body;
 }
 
@@ -288,6 +306,6 @@ function getLogo() {
 function getBanner() {
   return (
     "<br/><strong>¡Sigue nuestras redes sociales y comunica tu vínculo directo con la innovación</strong><br/>" +
-    '<a href="http://www.cogestec.co/agenda/"><img src="https://drive.google.com/uc?id=1hyYzvSH1SyXmVLEtxlHvM6WX_vDs8T8H"/></a>'
+    '<a href="http://www.cogestec.co/agenda/"><img src="https://drive.google.com/uc?id=1W0p2HZt_NfV0bvkA12iMSwQh-K2aOizD"/></a>'
   );
 }
