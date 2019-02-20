@@ -15,10 +15,20 @@ function checkEditedCell(range) {
     1,
     sheet.getLastColumn()
   );
+  var valuesNextRow = sheet.getSheetValues(
+    range.getRow() + 1,
+    1,
+    1,
+    sheet.getLastColumn()
+  );
   var rawPerson = sheetValues[0];
+  var nextRow = valuesNextRow[0];
   Logger.log("range");
   Logger.log(rawPerson);
   rawPerson = rawPerson.map(function(value) {
+    return value.toString();
+  });
+  nextRow = nextRow.map(function(value) {
     return value.toString();
   });
   SELECTED_PERSON.row = range.getRow();
@@ -31,9 +41,14 @@ function checkEditedCell(range) {
     dependecia: "COGESTEC 2019",
     telefono: rawPerson[4]
   };
-  Logger.log;
-  if (rawPerson[5].toLowerCase() !== "colombia") {
-    return;
+  Logger.log("person");
+  Logger.log(SELECTED_PERSON);
+  var nextRowHasItems =
+    nextRow[0].length > 1 && nextRow[1].length > 1 ? true : false;
+  Logger.log("has items?");
+  Logger.log(nextRowHasItems);
+  if (rawPerson[5].toLowerCase() !== "colombia" && !nextRowHasItems) {
+    handleOnCreateInternational();
   }
   if (range.getColumn() == 10) {
     handleOnPaymentChange(range);
@@ -70,6 +85,11 @@ function handleOnDocumentChange(range) {
     sendDocDisapprovedMail();
   }
 }
+
+function handleOnCreateInternational() {
+  sendInternationalMail();
+}
+
 function getSheetFromSpreadSheet(url, sheet) {
   var Spreedsheet = SpreadsheetApp.openByUrl(url);
   if (url && sheet) return Spreedsheet.getSheetByName(sheet);
@@ -129,9 +149,14 @@ function sendResearcherPayApprovedMail() {
   sendEmail(subject, htmlBody);
 }
 
+function sendInternationalMail() {
+  var htmlBody = buildInternationalBody();
+  var subject = "Confirmación de Registro";
+  sendEmail(subject, htmlBody);
+}
+
 function sendEmail(subject, body) {
   Logger.log("I like the way you french inhale");
-  Logger.log(body);
   if (SELECTED_PERSON.data) {
     MailApp.sendEmail({
       to: SELECTED_PERSON.data.email,
@@ -155,6 +180,17 @@ function getPersonQR() {
     SELECTED_PERSON.data.cedula +
     '&amp;qzone=1&amp;margin=0&amp;size=400x400&amp;ecc=L" alt="qr code" />';
   return qrimage;
+}
+
+function buildInternationalBody() {
+  var body = "";
+  var successMsg = getInternationalSuccessMessage();
+  successMsg = successMsg.concat(getLogo());
+  body = successMsg;
+  var qr = getPersonQR();
+  body = body.concat(qr);
+  body = body.concat(getBanner());
+  return body;
 }
 
 function buildResearcherPayApprovedBody() {
@@ -283,6 +319,18 @@ function buildModal(successMsg) {
     "</div>";
 
   return modal;
+}
+
+function getInternationalSuccessMessage() {
+  return (
+    "<p>Cordial saludo " +
+    SELECTED_PERSON.data.nombre +
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
+    "eres un invitado especial a este evento exclusivo donde conocerás métodos y estudios relacionados al emprendimiento, estrategias y técnicas para transformar tu visión; " +
+    "así mismo, investigaciones académicas sobre los impactos que tendrá la tecnología en el mundo moderno." +
+    '<br/> En este email adjuntaremos un código QR, por favor, preséntarlo en las <span style="text-decoration: underline"> mesas de registro</span> al ingreso del evento, <span style="color:red">allí tendremos la recepción de su pago</span>;' +
+    "Con el comprobante del pago tendrás acceso a todas las conferencias presentadas, refrigerios, certificación de participación y si lo autorizas serás publicado en las memorias del evento. Sino presentas el código QR y realizas el pago, no podremos generar certificados, ni podrás ingresar a las conferencias plenarias.</p>"
+  );
 }
 
 function getSuccessMessage() {
