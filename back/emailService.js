@@ -52,7 +52,7 @@ function checkEditedCell(range) {
   }
   if (range.getColumn() == 10) {
     handleOnPaymentChange(range);
-  } else if (range.getColumn() == 18) {
+  } else if (range.getColumn() == 21) {
     handleOnDocumentChange(range);
   }
 }

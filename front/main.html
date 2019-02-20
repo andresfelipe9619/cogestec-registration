@@ -193,6 +193,9 @@
         formData.push({ name: "autor1", value: "-" });
         formData.push({ name: "autor2", value: "-" });
         formData.push({ name: "autor3", value: "-" });
+        formData.push({ name: "autor4", value: "-" });
+        formData.push({ name: "autor5", value: "-" });
+        formData.push({ name: "autor6", value: "-" });
       }
       if (!$(".support-field").hasClass("not-visible")) {
         let file = $("#pay_file").prop("files")[0];
@@ -694,6 +697,9 @@
       $("input[name='autor1']").val(person.data.autor1);
       $("input[name='autor2']").val(person.data.autor2);
       $("input[name='autor3']").val(person.data.autor3);
+      $("input[name='autor4']").val(person.data.autor4);
+      $("input[name='autor5']").val(person.data.autor5);
+      $("input[name='autor6']").val(person.data.autor6);
       showStepsMessage("researcher");
     }
     $("input[name='pago_total']").val(person.data.pago_total);
