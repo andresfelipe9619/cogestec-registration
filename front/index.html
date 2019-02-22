@@ -70,7 +70,11 @@
             <h4 id="step-msg"></h4>
           </div>
           <form class="ui form attached fluid segment" id="form-form">
-            <h4 class="ui dividing header">Información General</h4>
+            <h4 class="ui dividing header">INFORMACIÓN GENERAL</h4>
+            <p id="digita-ponencia" class="not-visible">
+              Digite en esta sección la información de la persona que sustenta
+              la ponencia, será quién tendrá ingreso al evento.
+            </p>
             <div class="field">
               <div class="two fields">
                 <div class="field">
@@ -855,7 +859,7 @@
                 </div>
               </div>
               <div class="six wide field">
-                <label>INSTITUCIÓN</label>
+                <label>INSTITUCIÓN Tal como aparecerá en el certificado.</label>
                 <input
                   name="institucion"
                   placeholder="Institución..."
@@ -910,11 +914,18 @@
               />
             </div>
             <div class="field support-ready-field not-visible"></div>
+            <hr />
             <div id="ponencia_fields">
-              <div class="fields">
+              <h3>
+                <strong
+                  >La siguiente información, será con el objetivo de
+                  certificación una vez la ponencia sea sustentada.</strong
+                >
+              </h3>
+              <div style="margin-top:20px" class="fields">
                 <div class="eight wide field">
                   <label for="nombre_ponencia">
-                    Nombre de la Ponencia
+                    NOMBRE DE LA PONENCIA Tal como aparecerá en el certificado.
                   </label>
                   <input
                     type="text"
@@ -971,6 +982,7 @@
                   </div>
                 </div>
               </div>
+              <p>Tal como aparecerá en el certificado.</p>
               <div class="fields">
                 <div class="five wide field">
                   <label>AUTOR 1</label>
@@ -999,11 +1011,22 @@
                   <input name="autor6" placeholder="Autor 6..." type="text" />
                 </div>
               </div>
+              <div class="fields">
+                <div class="five wide field">
+                  <label
+                    >EJES TEMÁTICOS
+                    <a href="http://www.cogestec.co/ejes/"
+                      >http://www.cogestec.co/ejes/</a
+                    >
+                  </label>
+                  <input name="eje_tematico" placeholder="ejes" type="text" />
+                </div>
+              </div>
               <div class="field file-ponencia-field">
                 <label for="ponencia_file"
                   ><strong>ARCHIVO PONENCIA</strong> <br />
-                  Por favor, cargar un ARCHIVO DE PONENCIA(formato .DOC o
-                  DOCX)</label
+                  Por favor, cargar el ARCHIVO DE PONENCIA en su VERSIÓN FINAL
+                  -Correcciones aplicadas-(formato .DOC o DOCX)</label
                 >
                 <input
                   type="file"
@@ -1030,6 +1053,10 @@
               </div>
             </div>
             <br />
+            <p>
+              Cualquier ajuste en la información consignada, tomara
+              aproximadamente 3 meses
+            </p>
             <div
               id="submit-btn"
               name="submit-btn "

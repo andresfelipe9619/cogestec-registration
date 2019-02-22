@@ -52,7 +52,7 @@ function checkEditedCell(range) {
   }
   if (range.getColumn() == 10) {
     handleOnPaymentChange(range);
-  } else if (range.getColumn() == 21) {
+  } else if (range.getColumn() == 22) {
     handleOnDocumentChange(range);
   }
 }
@@ -151,7 +151,7 @@ function sendResearcherPayApprovedMail() {
 
 function sendInternationalMail() {
   var htmlBody = buildInternationalBody();
-  var subject = "Confirmación de Registro";
+  var subject = "Confirmación de Registro Internacional";
   sendEmail(subject, htmlBody);
 }
 
@@ -187,8 +187,6 @@ function buildInternationalBody() {
   var successMsg = getInternationalSuccessMessage();
   successMsg = successMsg.concat(getLogo());
   body = successMsg;
-  var qr = getPersonQR();
-  body = body.concat(qr);
   body = body.concat(getBanner());
   return body;
 }

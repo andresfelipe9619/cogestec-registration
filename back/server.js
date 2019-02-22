@@ -274,7 +274,10 @@ function objectToSheetValues(object, headers) {
       if (String(object[item].name) == String(lowerHeaders[header])) {
         if (
           object[item].name == "nombres" ||
-          object[item].name == "apellidos"
+          object[item].name == "apellidos" ||
+          object[item].name == "institucion" ||
+          object[item].name == "nombre_ponencia" ||
+          object[item].name.indexOf("autor") !== -1
         ) {
           arrayValues[header] = object[item].value.toUpperCase();
           Logger.log(arrayValues);

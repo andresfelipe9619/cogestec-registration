@@ -5,6 +5,7 @@
   let currentPerson = null;
   let requestPayload = null;
   let radioPressed = undefined;
+  let superAttendant = { type: "", international: false };
   let formValidationFields = {
     nombres: {
       identifier: "nombres",
@@ -126,7 +127,25 @@
     $(".submit.button").click(function() {
       buttonpressed = $(this).attr("name");
     });
-
+    $("#dropdown").dropdown({
+      onChange: function(val) {
+        console.log("val", val);
+        if (val !== "Colombia") {
+          superAttendant.international = true;
+          console.log("att", superAttendant);
+          if (!superAttendant.type.includes("tudent")) {
+            showStepsMessage("international");
+          } else {
+            showStepsMessage("student");
+          }
+          $(".support-field").addClass("not-visible");
+        } else {
+          superAttendant.international = false;
+          showStepsMessage(superAttendant.type);
+          $(".support-field").removeClass("not-visible");
+        }
+      }
+    });
     $(".ui.radio.checkbox").checkbox();
     $(".ui.radio.checkbox").checkbox({
       onChecked: function() {
@@ -147,7 +166,7 @@
         e.metaKey || // cmd/ctrl
         e.which <= 0 || // arrow keys
         e.which == 8 || // delete key
-        /[0-9]/.test(String.fromCharCode(e.which))
+        /^[0-9a-zA-Z]+$/.test(String.fromCharCode(e.which))
       ); // numbers
     });
 
@@ -190,6 +209,7 @@
         formData.push({ name: "nombre_ponencia", value: "-" });
         formData.push({ name: "acepta_ponencia", value: "-" });
         formData.push({ name: "ponencia_file", value: "-" });
+        formData.push({ name: "eje_tematico", value: "-" });
         formData.push({ name: "autor1", value: "-" });
         formData.push({ name: "autor2", value: "-" });
         formData.push({ name: "autor3", value: "-" });
@@ -327,7 +347,11 @@
       if (response.ok) {
         // console.log(buttonpressed);
         if (String(buttonpressed).includes("submit-btn")) {
-          showPersonInModal(response.data);
+          if (!superAttendant.international) {
+            showPersonInModal(response.data);
+          } else {
+            showSuccessInternationalModal();
+          }
         } else {
           showDiscountModal();
         }
@@ -421,6 +445,7 @@
           he_pays = "$322.000";
           concept = "Professional Researcher";
           $(".doc-field").addClass("not-visible");
+          $("#digita-ponencia").removeClass("not-visible");
           // $(".file-ponencia-field").addClass("not-visible");
           showStepsMessage("researcher");
           $("#form-form").form({
@@ -453,8 +478,9 @@
           concept = "Student Researcher";
           $("#submit-btn").addClass("not-visible");
           $("#free-btn").removeClass("not-visible");
+          $("#digita-ponencia").removeClass("not-visible");
           // $(".file-ponencia-field").addClass("not-visible");
-          showStepsMessage("researcher");
+          showStepsMessage("student");
           ponenciaValidation.doc_file = studentValidation.doc_file;
           $("#form-form").form({
             inline: true,
@@ -469,6 +495,7 @@
           break;
       }
       requestPayload = he_pays;
+      superAttendant.type = concept;
       $("#ponencia_si").prop("checked", true);
       $("input[name='concepto_pago']").val(concept);
       $("input[name='concepto_pago']").prop("readonly", true);
@@ -480,31 +507,42 @@
   }
 
   function showStepsMessage(attendant) {
-    if (attendant === "student") {
+    if (attendant === "international") {
       $("#step-msg").html("");
       $("#step-msg").html(`
-        <ol>
-          <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
-  <li><span>Carga el certificado de estudios que te avala como estudiante activo de pregrado.</span></li>
-  <li><span>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</span></li>
-  <li><span>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</span></li>
-  <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
-  <li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
-  <li><span>Ingrese su número de identificación.</span></li>
-  <li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
-  <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
-        </ol>`);
+        <p>Ponente Internacional</p>
+          <ol>
+            <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
+    <li><span>Recibirá un correo electrónico de bienvenida con toda la información de su participación.</span></li>
+    <li><span>El día 14 de Marzo debe acercarse a las mesas de registro para cancelar la inscripción.</span></li>
+          </ol>`);
     } else {
-      $("#step-msg").html("");
-      $("#step-msg").html(`<ol>
+      if (attendant === "student") {
+        $("#step-msg").html("");
+        $("#step-msg").html(`
+          <ol>
+            <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
+    <li><span>Carga el certificado de estudios que te avala como estudiante activo de pregrado.</span></li>
+    <li><span>Te enviaremos una aceptación de los documentos soporte por correo electrónico.</span></li>
+    <li><span>Haga clic en el enlace formulario de pago y copie los datos correspondientes.</span></li>
+    <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
+    <li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
+    <li><span>Ingrese su número de identificación.</span></li>
+    <li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
+    <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
+    </ol>`);
+      } else {
+        $("#step-msg").html("");
+        $("#step-msg").html(`<ol>
         <li><span>Registra los datos completos en este formulario de inscripción.</span></li>
-  <li><span>Haga clic en el formulario de pago y copie los datos correspondientes.</span></li>
-  <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
-  <li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
-  <li><span>Ingrese su número de identificación.</span></li>
-  <li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
-  <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
-        </ol>`);
+    <li><span>Haga clic en el formulario de pago y copie los datos correspondientes.</span></li>
+    <li><span>Realiza el pago requerido, utilizando los formularios correspondientes.</span></li>
+    <li><span>Descarga la confirmación del pago, y regrese al formulario de registro.</span></li>
+    <li><span>Ingrese su número de identificación.</span></li>
+    <li><span style="font-weight:bold; color:blue;">Cargue el comprobante de pagos en el formulario de inscripción.</span></li>
+    <li><span>Al realizar la verificación te llegará un correo electrónico de confirmación, una carta de aceptación y un código QR que necesitas presentar en la entrada del evento.</span></li>
+    </ol>`);
+      }
     }
   }
 
@@ -589,10 +627,10 @@
     if (person.data.ponencia_file.length > 3) {
       $(".ponencia-ready-field").removeClass("not-visible");
       $(".ponencia-ready-field").html(`
-          <h2><a style="text-decoration: underline" target="_blank" href="${
-            person.data.ponencia_file
-          }">Ver Archivo Ponencia</a></h2>
-          `);
+            <h2><a style="text-decoration: underline" target="_blank" href="${
+              person.data.ponencia_file
+            }">Ver Archivo Ponencia</a></h2>
+            `);
     } else {
       $(".ponencia-ready-field").addClass("not-visible");
       $(".ponencia-ready-field").html("");
@@ -613,10 +651,10 @@
       $("#register-pay-btn").addClass("not-visible");
 
       $(".support-ready-field").html(`
-          <h2><a target="_blank" style="text-decoration:underline" href="${
-            person.data.pay_file
-          }">CARGADO Soporte Pago</a></h2>
-          `);
+            <h2><a target="_blank" style="text-decoration:underline" href="${
+              person.data.pay_file
+            }">CARGADO Soporte Pago</a></h2>
+            `);
     } else if (person.data["pago_comprobado"] == "SI") {
       $("#register-pay-btn").addClass("not-visible");
       $(".file-ponencia-field").addClass("not-visible");
@@ -691,7 +729,15 @@
     $("input[name='dependencia']").val(person.data.dependencia);
     $("input[name='concepto_pago']").val(person.data.concepto_pago);
     if (!person.data.concepto_pago.includes("esearcher")) {
-      showStepsMessage("student");
+      if (person.data.concepto_pago.includes("tudent")) {
+        showStepsMessage("student");
+      } else {
+        if (superAttendant.international) {
+          showStepsMessage("international");
+        } else {
+          showStepsMessage("professional");
+        }
+      }
     } else {
       $("input[name='nombre_ponencia']").val(person.data.nombre_ponencia);
       $("input[name='autor1']").val(person.data.autor1);
@@ -700,7 +746,15 @@
       $("input[name='autor4']").val(person.data.autor4);
       $("input[name='autor5']").val(person.data.autor5);
       $("input[name='autor6']").val(person.data.autor6);
-      showStepsMessage("researcher");
+      if (person.data.concepto_pago.includes("tudent")) {
+        showStepsMessage("student");
+      } else {
+        if (superAttendant.international) {
+          showStepsMessage("international");
+        } else {
+          showStepsMessage("researcher");
+        }
+      }
     }
     $("input[name='pago_total']").val(person.data.pago_total);
     // $(".ui.radio").checkbox();
@@ -722,8 +776,8 @@
     $("#pay-msg").removeClass("warning");
     $("#pay-msg").addClass("success");
     $("#pay-msg").html(`<i class="icon check circle"></i>
-                    El pago de su inscripción fue registrado satisfactoriamente.
-                  </div>`);
+                      El pago de su inscripción fue registrado satisfactoriamente.
+                    </div>`);
   }
 
   function showPaymentDisapproved(person) {
@@ -731,9 +785,9 @@
     $("#pay-msg").removeClass("success");
     $("#pay-msg").addClass("warning");
     $("#pay-msg").html(`<i class="icon warning "></i>
-                    El pago de su inscripción aun no ha sido comprobado.
-                    Usted ha sido registrado como ${person.data.concepto_pago}
-                  </div>`);
+                      El pago de su inscripción aun no ha sido comprobado.
+                      Usted ha sido registrado como ${person.data.concepto_pago}
+                    </div>`);
     // $("#register-pay-btn").removeClass("not-visible");
   }
 
@@ -826,6 +880,7 @@
     $("#submit-btn").removeClass("not-visible");
     $("#submit-pay-btn").removeClass("not-visible");
     $(".fields.regreso").removeClass("not-allowed");
+    $("#digita-ponencia").addClass("not-visible");
     $("#pay-msg").addClass("not-visible");
     $("#pay-msg").text("");
     $("#register-pay-btn").addClass("not-visible");
@@ -845,8 +900,8 @@
     $("#modal-form").removeClass("not-visible");
 
     $("#result-msg").text(`
-        Por favor, copie la información que mostramos a continuación
-        en el formulario de pago de inscripción (Botón azul).`);
+          Por favor, copie la información que mostramos a continuación
+          en el formulario de pago de inscripción (Botón azul).`);
 
     $("input[name$='_modal']").prop("readonly", true);
     // $("input[name$='_modal']").addClass("not-allowed");
@@ -860,6 +915,17 @@
     $("input[name='concepto_pago_modal']").val(person.concepto_pago);
     $("input[name='pago_total_modal']").val(person.pago_total);
     $(".ui.modal").modal("refresh");
+  }
+  function showSuccessInternationalModal() {
+    $("#form-form").removeClass("loading");
+    $("#pls-wait").removeClass("not-visible");
+    $("#result-msg").text("");
+    $(".ui.modal").modal("show");
+    $("#modal-form").addClass("not-visible");
+    $(".actions").css("display", "block");
+    $("#result-msg").text(
+      `Ha sido registrado satisfactoriamente, recibira un correo en breve con mayor información.`
+    );
   }
 
   function showDiscountModal() {
