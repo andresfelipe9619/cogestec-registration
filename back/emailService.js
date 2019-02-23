@@ -48,7 +48,7 @@ function checkEditedCell(range) {
   Logger.log("has items?");
   Logger.log(nextRowHasItems);
   if (rawPerson[5].toLowerCase() !== "colombia" && !nextRowHasItems) {
-    handleOnCreateInternational();
+    // handleOnCreateInternational();
   }
   if (range.getColumn() == 10) {
     handleOnPaymentChange(range);

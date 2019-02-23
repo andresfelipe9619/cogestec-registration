@@ -118,7 +118,9 @@ function registerPerson(person) {
   inscritosSheet.appendRow(finalValues);
   var result = { data: nicePerson, ok: true };
   logFunctionOutput(registerPerson.name, result);
-
+  if (personValues[5].toLowerCase() !== "colombia") {
+    sendInternationalMail(nicePerson);
+  }
   return result;
 }
 
@@ -317,4 +319,59 @@ function logFunctionOutput(functionName, returnValue) {
   Logger.log("Value------------>");
   Logger.log(returnValue);
   Logger.log("----------------------------------");
+}
+
+function sendInternationalMail(person) {
+  var htmlBody = buildInternationalBody(person);
+  var subject = "Confirmación de Registro Internacional";
+  sendEmail(subject, htmlBody, person);
+}
+
+function sendEmail(subject, body, person) {
+  Logger.log("I like the way you french inhale");
+  if (person) {
+    MailApp.sendEmail({
+      to: person.email,
+      subject: subject,
+      name: "COGESTEC 2019",
+      htmlBody: body
+    });
+  }
+}
+
+function buildInternationalBody(person) {
+  var body = "";
+  var successMsg = getInternationalSuccessMessage(person);
+  successMsg = successMsg.concat(getLogo());
+  body = successMsg;
+  body = body.concat(getBanner());
+  return body;
+}
+
+function getInternationalSuccessMessage(person) {
+  return (
+    "<p>Cordial saludo " +
+    person.nombres +
+    " " +
+    person.apellidos +
+    ", bienvenido a COGESTEC 2019 el evento más innovador de Colombia," +
+    "eres un invitado especial a este evento exclusivo donde conocerás métodos y estudios relacionados al emprendimiento, estrategias y técnicas para transformar tu visión; " +
+    "así mismo, investigaciones académicas sobre los impactos que tendrá la tecnología en el mundo moderno." +
+    '<br/> En este email adjuntaremos un código QR, por favor, preséntarlo en las <span style="text-decoration: underline"> mesas de registro</span> al ingreso del evento, <span style="color:red">allí tendremos la recepción de su pago</span>;' +
+    "Con el comprobante del pago tendrás acceso a todas las conferencias presentadas, refrigerios, certificación de participación y si lo autorizas serás publicado en las memorias del evento. Sino presentas el código QR y realizas el pago, no podremos generar certificados, ni podrás ingresar a las conferencias plenarias.</p>"
+  );
+}
+
+function getLogo() {
+  return (
+    "<strong>Haga clic en el logo para conocer la agenda:</strong><br/>" +
+    '<a href="http://www.cogestec.co/agenda/"><img src="http://www.cogestec.co/wp-content/uploads/2018/11/Logo-3.png" ' +
+    'width = "180px" height = "90px" /></a><br/>'
+  );
+}
+function getBanner() {
+  return (
+    "<br/><strong>¡Sigue nuestras redes sociales y comunica tu vínculo directo con la innovación</strong><br/>" +
+    '<a href="http://www.cogestec.co/agenda/"><img src="https://drive.google.com/uc?id=1W0p2HZt_NfV0bvkA12iMSwQh-K2aOizD"/></a>'
+  );
 }

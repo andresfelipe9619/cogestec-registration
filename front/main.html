@@ -431,7 +431,7 @@
           concept = "Professional Attendant";
           $(".doc-field").addClass("not-visible");
           $("#ponencia_fields").addClass("not-visible");
-          showStepsMessage("student");
+          showStepsMessage("professional");
           $("#form-form").form({
             inline: true,
             on: "blur",
@@ -517,7 +517,7 @@
     <li><span>El día 14 de Marzo debe acercarse a las mesas de registro para cancelar la inscripción.</span></li>
           </ol>`);
     } else {
-      if (attendant === "student") {
+      if (attendant.includes("tudent")) {
         $("#step-msg").html("");
         $("#step-msg").html(`
           <ol>
@@ -655,7 +655,12 @@
               person.data.pay_file
             }">CARGADO Soporte Pago</a></h2>
             `);
-    } else if (person.data["pago_comprobado"] == "SI") {
+    } else if (
+      person.data["pago_comprobado"] === "SI" ||
+      (person.data["documento_verificado"] !== "SI" &&
+        person.data["doc_file"].length > 3) ||
+      person.data["pais"] !== "Colombia"
+    ) {
       $("#register-pay-btn").addClass("not-visible");
       $(".file-ponencia-field").addClass("not-visible");
       $(".support-ready-field").removeClass("not-visible");
