@@ -131,6 +131,7 @@
       onChange: function(val) {
         console.log("val", val);
         if (val !== "Colombia") {
+          $("#col-pay-inst-div").addClass("not-visible");
           superAttendant.international = true;
           console.log("att", superAttendant);
           if (!superAttendant.type.includes("tudent")) {
@@ -143,6 +144,7 @@
           superAttendant.international = false;
           showStepsMessage(superAttendant.type);
           $(".support-field").removeClass("not-visible");
+          $("#col-pay-inst-div").removeClass("not-visible");
         }
       }
     });
