@@ -31,6 +31,8 @@ function checkEditedCell(range) {
   nextRow = nextRow.map(function(value) {
     return value.toString();
   });
+  if(!rawPerson) return;
+  
   SELECTED_PERSON.row = range.getRow();
   SELECTED_PERSON.data = {
     cedula: rawPerson[2],
