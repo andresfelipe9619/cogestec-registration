@@ -110,19 +110,19 @@ function refuseStudentDisccount() {
   var conceptoIndex = headers.indexOf("CONCEPTO_PAGO");
 
   if (SELECTED_PERSON.data.concepto_pago.indexOf("Researcher") !== -1) {
-    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$322.000"]]);
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["322.000"]]);
     inscritosSheet
       .getRange(index, conceptoIndex + 1)
       .setValues([["Professional Researcher"]]);
     SELECTED_PERSON.data.concepto_pago = "Professional Researcher";
-    SELECTED_PERSON.data.pago_total = "$322.000";
+    SELECTED_PERSON.data.pago_total = "322.000";
   } else if (SELECTED_PERSON.data.concepto_pago.indexOf("Student") !== -1) {
-    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["$437.000"]]);
+    inscritosSheet.getRange(index, pagoIndex + 1).setValues([["437.000"]]);
     inscritosSheet
       .getRange(index, conceptoIndex + 1)
       .setValues([["Professional"]]);
     SELECTED_PERSON.data.concepto_pago = "Professional";
-    SELECTED_PERSON.data.pago_total = "$437.000";
+    SELECTED_PERSON.data.pago_total = "437.000";
   }
   var htmlBody = buildDocDisapprovedBody();
   var subject = "Solicitud de descuento COGESTEC Denegada.";
@@ -286,7 +286,7 @@ function buildModal(successMsg) {
     '<div class="inline field">' +
     "<strong>*Pago Total:  </strong>" +
     "<label>" +
-    SELECTED_PERSON.data.pago_total +
+    "$ "+ SELECTED_PERSON.data.pago_total +
     "(pesos colombianos)" +
     " </label>" +
     "</div>" +
